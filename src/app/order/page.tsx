@@ -213,20 +213,6 @@ function OrderContent() {
           <div className="flex-1 overflow-auto pb-28">
             <div className="min-w-max px-4 pt-8 pb-6 flex flex-col items-center">
 
-              {/* ── Screen ── */}
-              <div className="mb-8 flex flex-col items-center w-full" style={{ maxWidth: 480 }}>
-                <div
-                  className="w-full h-[6px] rounded-full"
-                  style={{
-                    background: "linear-gradient(90deg, transparent 0%, #E03455 20%, #E03455 80%, transparent 100%)",
-                    boxShadow: "0 2px 16px rgba(224,52,85,0.45)",
-                  }}
-                />
-                <p className="text-[10px] tracking-[0.25em] uppercase text-gray-400 mt-2">
-                  All eyes this way please!
-                </p>
-              </div>
-
               {/* ── Rows ── */}
               <div className="space-y-[5px]">
                 {reversedRows.map((row) => {
@@ -264,6 +250,20 @@ function OrderContent() {
                     </div>
                   );
                 })}
+              </div>
+
+              {/* ── Screen ── */}
+              <div className="mt-8 flex flex-col items-center w-full" style={{ maxWidth: 480 }}>
+                <p className="text-[10px] tracking-[0.25em] uppercase text-gray-400 mb-2">
+                  All eyes this way please!
+                </p>
+                <div
+                  className="w-full h-[6px] rounded-full"
+                  style={{
+                    background: "linear-gradient(90deg, transparent 0%, #E03455 20%, #E03455 80%, transparent 100%)",
+                    boxShadow: "0 2px 16px rgba(224,52,85,0.45)",
+                  }}
+                />
               </div>
 
               {/* ── Legend ── */}
