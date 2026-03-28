@@ -8,6 +8,21 @@ interface Theater { id: string; name: string; city: string; _count: { screens: n
 interface Screen { id: string; name: string; number: number; capacity: number; _count: { seats: number } }
 interface Seat { id: string; row: string; number: number; label: string }
 
+function SeatButton({ s, selected, onSelect }: { s: Seat; selected: boolean; onSelect: () => void }) {
+  return (
+    <button
+      onClick={onSelect}
+      className={`w-[26px] h-[26px] rounded-[3px] text-[9px] font-semibold border transition-all active:scale-95
+        ${selected
+          ? "bg-[#E03455] border-[#E03455] text-white shadow"
+          : "bg-white border-gray-300 text-gray-500 hover:border-[#E03455] hover:text-[#E03455]"
+        }`}
+    >
+      {String(s.number).padStart(2, "0")}
+    </button>
+  );
+}
+
 function OrderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,14 +38,12 @@ function OrderContent() {
   const [seats, setSeats] = useState<Seat[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Handle QR pre-fill
   useEffect(() => {
     const tId = searchParams.get("t");
     const sId = searchParams.get("s");
     const seatId = searchParams.get("seat");
 
     if (tId && sId && seatId) {
-      // Pre-fill from QR code — fetch details and skip to confirm
       const prefill = async () => {
         setLoading(true);
         const [tRes, sRes] = await Promise.all([
@@ -52,7 +65,6 @@ function OrderContent() {
       };
       prefill();
     } else {
-      // Load theaters for manual selection
       fetch("/api/theaters")
         .then((r) => r.json())
         .then((d) => setTheaters(d.data ?? []));
@@ -71,6 +83,7 @@ function OrderContent() {
 
   const selectScreen = async (s: Screen) => {
     setScreen(s);
+    setSeatState(null);
     setLoading(true);
     const res = await fetch(`/api/screens/${s.id}/seats`);
     const data = await res.json();
@@ -79,9 +92,8 @@ function OrderContent() {
     setStep("seat");
   };
 
-  const selectSeat = (s: Seat) => {
-    setSeatState(s);
-    setStep("confirm");
+  const toggleSeat = (s: Seat) => {
+    setSeatState((prev) => (prev?.id === s.id ? null : s));
   };
 
   const confirm = () => {
@@ -97,154 +109,239 @@ function OrderContent() {
     router.push(`/menu?theaterId=${theater.id}&screenId=${screen.id}&seatId=${seat.id}&seatLabel=${seat.label}`);
   };
 
-  const rows = Array.from(new Set(seats.map((s) => s.row)));
+  // Sorted unique rows; reversed so the last row (back of hall) shows at top — screen at top
+  const sortedRows = Array.from(new Set(seats.map((s) => s.row))).sort();
+  const reversedRows = [...sortedRows].reverse();
+
+  /* ─── Step indicator ─────────────────────────────────────── */
+  const STEPS = ["Theater", "Screen", "Seat"];
+  const stepIdx = ["theater", "screen", "seat", "confirm"].indexOf(step);
+
+  const isSeatStep = step === "seat";
 
   return (
-    <div className="min-h-screen bg-[#F4F4F9] text-gray-900">
-      <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-3">
-        <div className="w-8 h-8 bg-[#E03455] rounded-lg flex items-center justify-center font-black text-white text-sm">C</div>
-        <span className="font-semibold text-lg">CineServe</span>
+    <div className="min-h-screen bg-[#F4F4F9] text-gray-900 flex flex-col">
+
+      {/* ── Header ── */}
+      <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center gap-3 shrink-0">
+        <div className="w-8 h-8 bg-[#E03455] rounded-lg flex items-center justify-center font-black text-white text-sm shrink-0">C</div>
+        <div className="min-w-0">
+          <p className="font-semibold text-sm leading-tight truncate">CineServe</p>
+          {theater && <p className="text-xs text-gray-400 truncate">{theater.name}{screen ? ` · ${screen.name}` : ""}</p>}
+        </div>
       </header>
 
-      {/* Steps */}
-      <div className="flex items-center px-6 py-4 gap-2">
-        {["Theater", "Screen", "Seat"].map((s, i) => {
-          const steps = ["theater", "screen", "seat", "confirm"];
-          const currentIdx = steps.indexOf(step);
-          const done = i < currentIdx;
-          const active = i === currentIdx;
-          return (
-            <div key={s} className="flex items-center gap-2">
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border
-                ${done ? "bg-green-500 border-green-500 text-white" : ""}
-                ${active ? "border-[#E03455] text-[#E03455]" : ""}
-                ${!done && !active ? "border-gray-300 text-gray-400" : ""}`}>
-                {done ? "✓" : i + 1}
-              </div>
-              <span className={`text-sm ${active ? "text-gray-900" : "text-gray-400"}`}>{s}</span>
-              {i < 2 && <div className="w-8 h-px bg-gray-100 ml-1" />}
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="max-w-lg mx-auto px-4 py-4">
-        {loading && (
-          <div className="text-center py-12 text-gray-400">Loading...</div>
-        )}
-
-        {/* Theater Selection */}
-        {!loading && step === "theater" && (
-          <div>
-            <h2 className="text-xl font-bold mb-2">Select your theater</h2>
-            <p className="text-gray-500 text-sm mb-6">Which theater are you currently in?</p>
-            <div className="space-y-3">
-              {theaters.map((t) => (
-                <button key={t.id} onClick={() => selectTheater(t)}
-                  className="w-full text-left p-4 bg-white border border-gray-200 rounded-xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
-                  <div className="font-semibold">{t.name}</div>
-                  <div className="text-sm text-gray-500 mt-1">{t.city} · {t._count.screens} screens</div>
-                </button>
-              ))}
-              {theaters.length === 0 && (
-                <div className="text-center py-10 text-gray-400">No theaters available</div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Screen Selection */}
-        {!loading && step === "screen" && (
-          <div>
-            <button onClick={() => setStep("theater")} className="text-gray-500 text-sm mb-4 hover:text-gray-900">← Back</button>
-            <h2 className="text-xl font-bold mb-2">Select your screen</h2>
-            <p className="text-gray-500 text-sm mb-6">Inside {theater?.name}</p>
-            <div className="space-y-3">
-              {screens.map((s) => (
-                <button key={s.id} onClick={() => selectScreen(s)}
-                  className="w-full text-left p-4 bg-white border border-gray-200 rounded-xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
-                  <div className="font-semibold">{s.name}</div>
-                  <div className="text-sm text-gray-500 mt-1">{s.capacity} seats</div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Seat Selection */}
-        {!loading && step === "seat" && (
-          <div>
-            <button onClick={() => setStep("screen")} className="text-gray-500 text-sm mb-4 hover:text-gray-900">← Back</button>
-            <h2 className="text-xl font-bold mb-2">Select your seat</h2>
-            <p className="text-gray-500 text-sm mb-4">Tap your exact seat number</p>
-
-            <div className="text-center text-xs text-gray-400 tracking-widest mb-4 py-2 bg-gray-50 rounded-lg">
-              SCREEN THIS WAY ▲
-            </div>
-
-            <div className="space-y-2 mb-6 overflow-x-auto">
-              {rows.map((row) => (
-                <div key={row} className="flex items-center gap-2">
-                  <span className="text-xs text-gray-400 w-4 flex-shrink-0">{row}</span>
-                  <div className="flex gap-1.5">
-                    {seats.filter((s) => s.row === row).map((s) => (
-                      <button key={s.id} onClick={() => selectSeat(s)}
-                        className={`w-7 h-6 rounded text-[10px] font-bold transition-all
-                          ${seat?.id === s.id ? "bg-[#E03455] text-white" : "bg-gray-100 hover:bg-[#E03455] hover:text-white text-gray-600 border border-gray-200 hover:border-[#E03455]"}`}>
-                        {s.number}
-                      </button>
-                    ))}
-                  </div>
+      {/* ── Step breadcrumb (hidden during seat map for space) ── */}
+      {!isSeatStep && (
+        <div className="flex items-center gap-2 px-5 py-3 bg-white border-b border-gray-100 shrink-0">
+          {STEPS.map((s, i) => {
+            const done = i < stepIdx;
+            const active = i === stepIdx;
+            return (
+              <div key={s} className="flex items-center gap-2">
+                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold border
+                  ${done ? "bg-green-500 border-green-500 text-white" : active ? "border-[#E03455] text-[#E03455]" : "border-gray-300 text-gray-400"}`}>
+                  {done ? "✓" : i + 1}
                 </div>
-              ))}
-            </div>
+                <span className={`text-xs ${active ? "font-semibold text-gray-900" : "text-gray-400"}`}>{s}</span>
+                {i < 2 && <div className="w-6 h-px bg-gray-200" />}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
-            <div className="flex gap-4 text-xs text-gray-400">
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-gray-100 border border-gray-200" />Available</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#E03455]" />Selected</span>
+      {/* ── Content ── */}
+      {loading && (
+        <div className="flex-1 flex items-center justify-center text-gray-400">Loading...</div>
+      )}
+
+      {/* Theater Selection */}
+      {!loading && step === "theater" && (
+        <div className="flex-1 max-w-lg mx-auto w-full px-4 py-5">
+          <h2 className="text-xl font-bold mb-1">Select your theater</h2>
+          <p className="text-gray-500 text-sm mb-5">Which theater are you in?</p>
+          <div className="space-y-3">
+            {theaters.map((t) => (
+              <button key={t.id} onClick={() => selectTheater(t)}
+                className="w-full text-left p-4 bg-white border border-gray-200 rounded-2xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
+                <div className="font-semibold">{t.name}</div>
+                <div className="text-sm text-gray-400 mt-0.5">{t.city} · {t._count.screens} screen{t._count.screens !== 1 ? "s" : ""}</div>
+              </button>
+            ))}
+            {theaters.length === 0 && (
+              <div className="text-center py-12 text-gray-400">No theaters available</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Screen Selection */}
+      {!loading && step === "screen" && (
+        <div className="flex-1 max-w-lg mx-auto w-full px-4 py-5">
+          <button onClick={() => setStep("theater")} className="text-gray-400 text-sm mb-4 hover:text-gray-900 flex items-center gap-1">← Back</button>
+          <h2 className="text-xl font-bold mb-1">Select your screen</h2>
+          <p className="text-gray-500 text-sm mb-5">Inside {theater?.name}</p>
+          <div className="space-y-3">
+            {screens.map((s) => (
+              <button key={s.id} onClick={() => selectScreen(s)}
+                className="w-full text-left p-4 bg-white border border-gray-200 rounded-2xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
+                <div className="font-semibold">{s.name}</div>
+                <div className="text-sm text-gray-400 mt-0.5">{s.capacity} seats</div>
+              </button>
+            ))}
+            {screens.length === 0 && (
+              <div className="text-center py-12 text-gray-400">No screens found</div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════
+          SEAT MAP — BMS-style cinema layout
+          ═══════════════════════════════════════════════════════ */}
+      {!loading && step === "seat" && (
+        <div className="flex-1 flex flex-col overflow-hidden">
+
+          {/* Sub-header */}
+          <div className="bg-white border-b border-gray-100 px-4 py-2 flex items-center justify-between shrink-0">
+            <button onClick={() => setStep("screen")} className="text-gray-400 text-sm hover:text-gray-900">← {screen?.name}</button>
+            <span className="text-xs text-gray-400">{seats.length} seats · tap to select</span>
+          </div>
+
+          {/* Scrollable seat map */}
+          <div className="flex-1 overflow-auto pb-28">
+            <div className="min-w-max px-4 pt-8 pb-6 flex flex-col items-center">
+
+              {/* ── Screen ── */}
+              <div className="mb-8 flex flex-col items-center w-full" style={{ maxWidth: 480 }}>
+                <div
+                  className="w-full h-[6px] rounded-full"
+                  style={{
+                    background: "linear-gradient(90deg, transparent 0%, #E03455 20%, #E03455 80%, transparent 100%)",
+                    boxShadow: "0 2px 16px rgba(224,52,85,0.45)",
+                  }}
+                />
+                <p className="text-[10px] tracking-[0.25em] uppercase text-gray-400 mt-2">
+                  All eyes this way please!
+                </p>
+              </div>
+
+              {/* ── Rows ── */}
+              <div className="space-y-[5px]">
+                {reversedRows.map((row) => {
+                  const rowSeats = seats
+                    .filter((s) => s.row === row)
+                    .sort((a, b) => a.number - b.number);
+                  const mid = Math.ceil(rowSeats.length / 2);
+                  const leftSeats = rowSeats.slice(0, mid);
+                  const rightSeats = rowSeats.slice(mid);
+
+                  return (
+                    <div key={row} className="flex items-center gap-2">
+                      {/* Row label — left */}
+                      <span className="text-[11px] font-semibold text-gray-400 w-5 text-right shrink-0 select-none">{row}</span>
+
+                      {/* Left block */}
+                      <div className="flex gap-[3px]">
+                        {leftSeats.map((s) => (
+                          <SeatButton key={s.id} s={s} selected={seat?.id === s.id} onSelect={() => toggleSeat(s)} />
+                        ))}
+                      </div>
+
+                      {/* Aisle */}
+                      {rightSeats.length > 0 && <div className="w-5 shrink-0" />}
+
+                      {/* Right block */}
+                      <div className="flex gap-[3px]">
+                        {rightSeats.map((s) => (
+                          <SeatButton key={s.id} s={s} selected={seat?.id === s.id} onSelect={() => toggleSeat(s)} />
+                        ))}
+                      </div>
+
+                      {/* Row label — right */}
+                      <span className="text-[11px] font-semibold text-gray-400 w-5 shrink-0 select-none">{row}</span>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* ── Legend ── */}
+              <div className="flex items-center gap-6 mt-8">
+                <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <span className="w-5 h-5 rounded-[3px] bg-white border border-gray-300 inline-block" />
+                  Available
+                </span>
+                <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                  <span className="w-5 h-5 rounded-[3px] bg-[#E03455] inline-block" />
+                  Selected
+                </span>
+              </div>
             </div>
           </div>
-        )}
 
-        {/* Confirm */}
-        {step === "confirm" && seat && (
-          <div>
-            <h2 className="text-xl font-bold mb-2">Confirm your seat</h2>
-            <p className="text-gray-500 text-sm mb-6">Is this correct? Your food will be delivered here.</p>
-
-            <div className="bg-white border border-[#E03455]/30 rounded-xl p-5 space-y-3 mb-6">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Theater</span>
-                <span className="font-medium">{theater?.name}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Screen</span>
-                <span className="font-medium">{screen?.name}</span>
-              </div>
-              <div className="flex justify-between text-sm items-center">
-                <span className="text-gray-500">Your Seat</span>
-                <span className="text-3xl font-black text-[#E03455]">{seat.label}</span>
+          {/* ── Floating confirm bar ── */}
+          <div
+            className="fixed bottom-0 inset-x-0 z-30 transition-transform duration-300"
+            style={{ transform: seat ? "translateY(0)" : "translateY(100%)" }}
+          >
+            <div className="bg-white border-t border-gray-200 shadow-2xl px-4 py-4">
+              <div className="max-w-lg mx-auto flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wide">Selected seat</p>
+                  <p className="text-3xl font-black text-[#E03455] leading-none mt-0.5">{seat?.label}</p>
+                  <p className="text-xs text-gray-400 mt-0.5">{screen?.name}</p>
+                </div>
+                <button
+                  onClick={() => { if (seat) setStep("confirm"); }}
+                  className="bg-[#E03455] hover:bg-[#C82040] text-white font-bold px-7 py-3.5 rounded-2xl text-sm transition-colors shrink-0"
+                >
+                  Confirm →
+                </button>
               </div>
             </div>
-
-            <button onClick={confirm}
-              className="w-full bg-[#E03455] hover:bg-[#C82040] text-white font-bold py-4 rounded-xl transition-colors">
-              Yes, show me the menu 🍿
-            </button>
-            <button onClick={() => setStep("seat")}
-              className="w-full mt-3 text-gray-500 hover:text-gray-900 text-sm py-2">
-              Change seat
-            </button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* ── Confirm step ── */}
+      {step === "confirm" && seat && (
+        <div className="flex-1 max-w-lg mx-auto w-full px-4 py-5">
+          <h2 className="text-xl font-bold mb-1">Confirm your seat</h2>
+          <p className="text-gray-500 text-sm mb-6">Your food will be delivered to this seat.</p>
+
+          <div className="bg-white border border-[#E03455]/30 rounded-2xl p-5 space-y-3 mb-6">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Theater</span>
+              <span className="font-medium">{theater?.name}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-400">Screen</span>
+              <span className="font-medium">{screen?.name}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm pt-2 border-t border-gray-100">
+              <span className="text-gray-400">Your Seat</span>
+              <span className="text-4xl font-black text-[#E03455]">{seat.label}</span>
+            </div>
+          </div>
+
+          <button onClick={confirm}
+            className="w-full bg-[#E03455] hover:bg-[#C82040] text-white font-bold py-4 rounded-2xl transition-colors">
+            Yes, show me the menu 🍿
+          </button>
+          <button onClick={() => setStep("seat")}
+            className="w-full mt-3 text-gray-400 hover:text-gray-900 text-sm py-2">
+            ← Change seat
+          </button>
+        </div>
+      )}
     </div>
   );
 }
 
 export default function OrderPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F4F4F9] flex items-center justify-center text-gray-500">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F4F4F9] flex items-center justify-center text-gray-400">Loading...</div>}>
       <OrderContent />
     </Suspense>
   );
