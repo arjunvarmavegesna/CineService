@@ -39,32 +39,54 @@ enum MenuItemStatus {
   HIDDEN
 }
 
+enum CouponType {
+  PERCENTAGE
+  FIXED
+}
+
 model User {
-  id            String   @id @default(cuid())
-  clerkId       String?  @unique
-  name          String?
-  email         String?  @unique
-  phone         String?  @unique
-  role          Role     @default(CUSTOMER)
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  orders        Order[]
+  id               String            @id @default(cuid())
+  clerkId          String?           @unique
+  name             String?
+  email            String?           @unique
+  phone            String?
+  role             Role              @default(CUSTOMER)
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  orders           Order[]
+  staffAssignments StaffAssignment[]
+  auditLogs        AuditLog[]
 }
 
 model Theater {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
-  address   String
-  city      String
-  state     String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  screens   Screen[]
-  menuItems MenuItem[]
-  orders    Order[]
+  id               String            @id @default(cuid())
+  name             String
+  slug             String            @unique
+  address          String
+  city             String
+  state            String
+  phone            String?
+  email            String?
+  imageUrl         String?
+  isActive         Boolean           @default(true)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  screens          Screen[]
+  menuItems        MenuItem[]
+  orders           Order[]
+  staffAssignments StaffAssignment[]
+  settings         TheaterSettings?
+}
+
+model TheaterSettings {
+  id            String  @id @default(cuid())
+  theaterId     String  @unique
+  taxRate       Float   @default(5)
+  packagingFee  Float   @default(10)
+  serviceCharge Float   @default(0)
+  deliveryEtaMin Int    @default(12)
+  theater       Theater @relation(fields: [theaterId], references: [id], onDelete: Cascade)
 }
 
 model Screen {
@@ -76,32 +98,50 @@ model Screen {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  theater   Theater  @relation(fields: [theaterId], references: [id])
+  theater   Theater  @relation(fields: [theaterId], references: [id], onDelete: Cascade)
   seats     Seat[]
   orders    Order[]
+
+  @@unique([theaterId, number])
 }
 
 model Seat {
-  id       String   @id @default(cuid())
-  screenId String
-  row      String
-  number   Int
-  label    String
-  isActive Boolean  @default(true)
+  id        String   @id @default(cuid())
+  screenId  String
+  row       String
+  number    Int
+  label     String
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
-  screen   Screen   @relation(fields: [screenId], references: [id])
-  orders   Order[]
+  screen    Screen   @relation(fields: [screenId], references: [id], onDelete: Cascade)
+  orders    Order[]
+  qrCode    QRCode?
 
   @@unique([screenId, row, number])
+}
+
+model QRCode {
+  id        String   @id @default(cuid())
+  seatId    String   @unique
+  code      String   @unique @default(cuid())
+  theaterId String
+  screenId  String
+  metadata  Json?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  seat      Seat     @relation(fields: [seatId], references: [id], onDelete: Cascade)
 }
 
 model Category {
   id        String     @id @default(cuid())
   name      String
   slug      String     @unique
+  icon      String?
   sortOrder Int        @default(0)
   isActive  Boolean    @default(true)
   createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   menuItems MenuItem[]
 }
 
@@ -116,6 +156,8 @@ model MenuItem {
   isVeg       Boolean        @default(true)
   status      MenuItemStatus @default(AVAILABLE)
   isFeatured  Boolean        @default(false)
+  sortOrder   Int            @default(0)
+  tags        String[]       @default([])
   createdAt   DateTime       @default(now())
   updatedAt   DateTime       @updatedAt
   category    Category       @relation(fields: [categoryId], references: [id])
@@ -123,25 +165,51 @@ model MenuItem {
   orderItems  OrderItem[]
 }
 
+model Coupon {
+  id          String     @id @default(cuid())
+  code        String     @unique
+  type        CouponType @default(PERCENTAGE)
+  value       Float
+  minOrderAmt Float      @default(0)
+  maxDiscount Float?
+  usageLimit  Int?
+  usageCount  Int        @default(0)
+  isActive    Boolean    @default(true)
+  expiresAt   DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  orders      Order[]
+}
+
 model Order {
-  id          String      @id @default(cuid())
-  orderNumber String      @unique
-  userId      String?
-  theaterId   String
-  screenId    String
-  seatId      String
-  seatLabel   String
-  status      OrderStatus @default(PENDING)
-  subtotal    Float
-  taxAmount   Float       @default(0)
-  totalAmount Float
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-  user        User?       @relation(fields: [userId], references: [id])
-  theater     Theater     @relation(fields: [theaterId], references: [id])
-  screen      Screen      @relation(fields: [screenId], references: [id])
-  seat        Seat        @relation(fields: [seatId], references: [id])
-  items       OrderItem[]
+  id            String           @id @default(cuid())
+  orderNumber   String           @unique
+  userId        String?
+  theaterId     String
+  screenId      String
+  seatId        String
+  seatLabel     String
+  status        OrderStatus      @default(PENDING)
+  subtotal      Float
+  taxAmount     Float            @default(0)
+  packagingFee  Float            @default(0)
+  discount      Float            @default(0)
+  totalAmount   Float
+  couponId      String?
+  customerName  String?
+  customerPhone String?
+  notes         String?
+  estimatedAt   DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  user          User?            @relation(fields: [userId], references: [id])
+  theater       Theater          @relation(fields: [theaterId], references: [id])
+  screen        Screen           @relation(fields: [screenId], references: [id])
+  seat          Seat             @relation(fields: [seatId], references: [id])
+  coupon        Coupon?          @relation(fields: [couponId], references: [id])
+  items         OrderItem[]
+  payment       Payment?
+  statusLogs    OrderStatusLog[]
 }
 
 model OrderItem {
@@ -152,6 +220,70 @@ model OrderItem {
   unitPrice  Float
   totalPrice Float
   name       String
-  order      Order    @relation(fields: [orderId], references: [id])
+  notes      String?
+  order      Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+}
+
+model OrderStatusLog {
+  id        String      @id @default(cuid())
+  orderId   String
+  status    OrderStatus
+  updatedBy String?
+  note      String?
+  createdAt DateTime    @default(now())
+  order     Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  orderId           String        @unique
+  amount            Float
+  currency          String        @default("INR")
+  status            PaymentStatus @default(PENDING)
+  provider          String        @default("razorpay")
+  providerOrderId   String?
+  providerPaymentId String?
+  providerSignature String?
+  failureReason     String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  order             Order         @relation(fields: [orderId], references: [id])
+}
+
+model StaffAssignment {
+  id        String   @id @default(cuid())
+  userId    String
+  theaterId String
+  screenId  String?
+  role      Role
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  theater   Theater  @relation(fields: [theaterId], references: [id])
+}
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String?
+  orderId   String?
+  type      String
+  title     String
+  body      String
+  channel   String    @default("app")
+  isRead    Boolean   @default(false)
+  sentAt    DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  entityType String
+  entityId   String?
+  changes    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id])
 }

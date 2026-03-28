@@ -1,46 +1,93 @@
 "use client";
 
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useCartStore, getCartTotal } from "@/stores/useCartStore";
+import Link from "next/link";
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const seat = searchParams.get("seat");
-  const screen = searchParams.get("screen");
 
-  const cartRaw = searchParams.get("cart");
-  const cart = cartRaw ? JSON.parse(decodeURIComponent(cartRaw)) : [];
+  const theaterId = searchParams.get("theaterId") ?? "";
+  const screenId = searchParams.get("screenId") ?? "";
+  const seatId = searchParams.get("seatId") ?? "";
+  const seatLabel = searchParams.get("seatLabel") ?? "";
 
-  const subtotal = cart.reduce((s: number, i: any) => s + i.price * i.quantity, 0);
-  const tax = Math.round(subtotal * 0.05);
-  const packaging = 10;
-  const total = subtotal + tax + packaging;
+  const { items, clearCart, seat } = useCartStore();
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    useCartStore.persist.rehydrate();
+    setHydrated(true);
+  }, []);
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [instructions, setInstructions] = useState("");
+  const [couponCode, setCouponCode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [placed, setPlaced] = useState(false);
+  const [orderId, setOrderId] = useState<string | null>(null);
   const [orderNumber, setOrderNumber] = useState("");
+  const [error, setError] = useState("");
+
+  const displaySeat = seatLabel || seat?.seatLabel || "—";
+  const displayTheaterId = theaterId || seat?.theaterId || "";
+  const displayScreenId = screenId || seat?.screenId || "";
+  const displaySeatId = seatId || seat?.seatId || "";
+
+  const subtotal = hydrated ? getCartTotal(items) : 0;
+  const tax = Math.round(subtotal * 0.05);
+  const packaging = 10;
+  const total = subtotal + tax + packaging;
 
   const placeOrder = async () => {
-    if (!name || !phone) {
-      alert("Please enter your name and phone number");
-      return;
-    }
+    if (!name.trim()) { setError("Please enter your name"); return; }
+    if (!phone.trim() || phone.replace(/\D/g, "").length < 10) { setError("Please enter a valid phone number"); return; }
+    if (items.length === 0) { setError("Your cart is empty"); return; }
+
+    setError("");
     setLoading(true);
 
-    // Simulate order placement (we will connect real API later)
-    await new Promise((r) => setTimeout(r, 1500));
-    const num = "CS-" + Date.now().toString().slice(-6);
-    setOrderNumber(num);
-    setPlaced(true);
+    const payload = {
+      theaterId: displayTheaterId,
+      screenId: displayScreenId,
+      seatId: displaySeatId,
+      seatLabel: displaySeat,
+      customerName: name.trim(),
+      customerPhone: phone.trim(),
+      notes: instructions.trim() || undefined,
+      couponCode: couponCode.trim() || undefined,
+      items: items.map((item) => ({
+        menuItemId: item.id,
+        quantity: item.quantity,
+        name: item.name,
+        unitPrice: item.price,
+      })),
+    };
+
+    const res = await fetch("/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError(typeof data.error === "string" ? data.error : "Failed to place order. Please try again.");
+      setLoading(false);
+      return;
+    }
+
+    clearCart();
+    setOrderId(data.data.id);
+    setOrderNumber(data.data.orderNumber);
     setLoading(false);
   };
 
-  // Order placed screen
-  if (placed) {
+  // Order success screen
+  if (orderId) {
     return (
       <div className="min-h-screen bg-[#0a0a0f] text-white flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-sm">
@@ -48,7 +95,7 @@ function CheckoutContent() {
           <h1 className="text-2xl font-black mb-2">Order Placed!</h1>
           <p className="text-white/60 mb-6">
             Your food is being prepared and will be delivered to seat{" "}
-            <span className="text-amber-400 font-bold">{seat}</span>
+            <span className="text-amber-400 font-bold">{displaySeat}</span>
           </p>
 
           <div className="bg-[#141418] border border-white/10 rounded-2xl p-5 mb-6 text-left space-y-3">
@@ -58,77 +105,38 @@ function CheckoutContent() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-white/50">Seat</span>
-              <span className="font-bold">{seat}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-white/50">Estimated time</span>
-              <span className="font-bold text-green-400">~12 minutes</span>
+              <span className="font-bold">{displaySeat}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-white/50">Total paid</span>
               <span className="font-bold text-amber-400">₹{total}</span>
             </div>
-          </div>
-
-          {/* Order items */}
-          <div className="bg-[#141418] border border-white/10 rounded-2xl p-5 mb-6 text-left">
-            <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Your order</p>
-            <div className="space-y-2">
-              {cart.map((item: any) => (
-                <div key={item.id} className="flex justify-between text-sm">
-                  <span className="text-white/80">
-                    {item.emoji} {item.name} × {item.quantity}
-                  </span>
-                  <span className="text-white/60">₹{item.price * item.quantity}</span>
-                </div>
-              ))}
+            <div className="flex justify-between text-sm">
+              <span className="text-white/50">Estimated time</span>
+              <span className="font-bold text-green-400">~12 minutes</span>
             </div>
           </div>
 
-          {/* Status timeline */}
-          <div className="bg-[#141418] border border-white/10 rounded-2xl p-5 mb-6 text-left">
-            <p className="text-xs text-white/40 uppercase tracking-wide mb-4">Order status</p>
-            {[
-              { label: "Order confirmed", done: true, active: false },
-              { label: "Kitchen preparing", done: false, active: true },
-              { label: "Ready for delivery", done: false, active: false },
-              { label: "Delivered to your seat", done: false, active: false },
-            ].map((step, i) => (
-              <div key={i} className="flex gap-3 mb-3">
-                <div className="flex flex-col items-center">
-                  <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0
-                    ${step.done ? "bg-green-500 text-black" : step.active ? "border-2 border-amber-500" : "border border-white/20"}
-                  `}>
-                    {step.done ? "✓" : ""}
-                  </div>
-                  {i < 3 && <div className="w-px h-4 bg-white/10 mt-1" />}
-                </div>
-                <p className={`text-sm pt-0.5 ${step.done ? "text-white/60" : step.active ? "text-white font-medium" : "text-white/30"}`}>
-                  {step.label}
-                  {step.active && <span className="ml-2 text-amber-400 text-xs">← Now</span>}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <button
-            onClick={() => router.push("/")}
-            className="w-full border border-white/20 text-white/70 hover:text-white py-3 rounded-xl text-sm transition-colors"
+          <Link
+            href={`/order-status/${orderId}`}
+            className="block w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-4 rounded-xl text-center transition-colors mb-3"
           >
-            Back to home
-          </button>
+            Track Order Status
+          </Link>
+          <Link href="/" className="block text-white/50 hover:text-white text-sm py-2">Back to home</Link>
         </div>
       </div>
     );
   }
 
-  // Checkout form
+  if (!hydrated) {
+    return <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-white/50">Loading...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
       <header className="bg-[#141418] border-b border-white/10 px-4 py-4 flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-white/50 hover:text-white text-sm">
-          ← Back
-        </button>
+        <button onClick={() => router.back()} className="text-white/50 hover:text-white text-sm">← Back</button>
         <span className="font-semibold">Checkout</span>
       </header>
 
@@ -137,12 +145,10 @@ function CheckoutContent() {
         <div className="bg-[#141418] border border-white/10 rounded-2xl p-4">
           <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Delivering to</p>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400 font-black text-lg">
-              {seat}
-            </div>
+            <div className="w-10 h-10 bg-amber-500/20 rounded-xl flex items-center justify-center text-amber-400 font-black text-lg">{displaySeat}</div>
             <div>
-              <p className="font-bold">Seat {seat}</p>
-              <p className="text-sm text-white/50">Screen {screen}</p>
+              <p className="font-bold">Seat {displaySeat}</p>
+              <p className="text-sm text-white/50">{seat?.screenName ?? "—"} · {seat?.theaterName ?? "—"}</p>
             </div>
           </div>
         </div>
@@ -151,25 +157,17 @@ function CheckoutContent() {
         <div className="bg-[#141418] border border-white/10 rounded-2xl p-4">
           <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Order summary</p>
           <div className="space-y-2 mb-4">
-            {cart.map((item: any) => (
+            {items.map((item) => (
               <div key={item.id} className="flex justify-between text-sm">
-                <span className="text-white/80">
-                  {item.emoji} {item.name} × {item.quantity}
-                </span>
+                <span className="text-white/80">{item.name} × {item.quantity}</span>
                 <span>₹{item.price * item.quantity}</span>
               </div>
             ))}
           </div>
           <div className="border-t border-white/10 pt-3 space-y-1.5">
-            <div className="flex justify-between text-sm text-white/60">
-              <span>Subtotal</span><span>₹{subtotal}</span>
-            </div>
-            <div className="flex justify-between text-sm text-white/60">
-              <span>GST (5%)</span><span>₹{tax}</span>
-            </div>
-            <div className="flex justify-between text-sm text-white/60">
-              <span>Packaging</span><span>₹{packaging}</span>
-            </div>
+            <div className="flex justify-between text-sm text-white/60"><span>Subtotal</span><span>₹{subtotal}</span></div>
+            <div className="flex justify-between text-sm text-white/60"><span>GST (5%)</span><span>₹{tax}</span></div>
+            <div className="flex justify-between text-sm text-white/60"><span>Packaging</span><span>₹{packaging}</span></div>
             <div className="flex justify-between font-bold text-base pt-2 border-t border-white/10">
               <span>Total</span>
               <span className="text-amber-400">₹{total}</span>
@@ -177,11 +175,26 @@ function CheckoutContent() {
           </div>
         </div>
 
+        {/* Coupon */}
+        <div className="bg-[#141418] border border-white/10 rounded-2xl p-4">
+          <p className="text-xs text-white/40 uppercase tracking-wide mb-2">Have a coupon?</p>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              placeholder="Enter coupon code"
+              value={couponCode}
+              onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50 placeholder-white/20 uppercase"
+            />
+          </div>
+          <p className="text-xs text-white/30 mt-1.5">Try: WELCOME20 for 20% off</p>
+        </div>
+
         {/* Contact details */}
         <div className="bg-[#141418] border border-white/10 rounded-2xl p-4 space-y-3">
           <p className="text-xs text-white/40 uppercase tracking-wide">Your details</p>
           <div>
-            <label className="text-xs text-white/50 mb-1 block">Name</label>
+            <label className="text-xs text-white/50 mb-1 block">Name *</label>
             <input
               type="text"
               placeholder="Enter your name"
@@ -191,7 +204,7 @@ function CheckoutContent() {
             />
           </div>
           <div>
-            <label className="text-xs text-white/50 mb-1 block">Phone number</label>
+            <label className="text-xs text-white/50 mb-1 block">Phone number *</label>
             <input
               type="tel"
               placeholder="+91 98765 43210"
@@ -203,7 +216,7 @@ function CheckoutContent() {
           <div>
             <label className="text-xs text-white/50 mb-1 block">Special instructions (optional)</label>
             <textarea
-              placeholder="E.g. extra ketchup, no ice..."
+              placeholder="e.g. extra ketchup, no ice..."
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               rows={2}
@@ -212,18 +225,21 @@ function CheckoutContent() {
           </div>
         </div>
 
-        {/* Place order button */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-400 text-sm rounded-xl px-4 py-3">
+            {error}
+          </div>
+        )}
+
         <button
           onClick={placeOrder}
-          disabled={loading}
+          disabled={loading || items.length === 0}
           className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-bold py-4 rounded-2xl text-lg transition-colors"
         >
           {loading ? "Placing order..." : `Place Order · ₹${total}`}
         </button>
 
-        <p className="text-center text-xs text-white/30 pb-8">
-          Payment will be collected at delivery for now
-        </p>
+        <p className="text-center text-xs text-white/30 pb-8">Payment collected at delivery · Order is final once placed</p>
       </div>
     </div>
   );
@@ -231,11 +247,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-white/50">
-        Loading...
-      </div>
-    }>
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-white/50">Loading...</div>}>
       <CheckoutContent />
     </Suspense>
   );
