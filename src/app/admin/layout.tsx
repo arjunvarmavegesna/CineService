@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useUser, UserButton } from "@clerk/nextjs";
 
 const NAV = [
@@ -17,8 +17,16 @@ const NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { user } = useUser();
+
+  // Verify this Clerk user is in the ADMIN_EMAILS allowlist by probing a protected endpoint
+  useEffect(() => {
+    fetch("/api/admin/reports?days=1").then((r) => {
+      if (r.status === 403) router.replace("/unauthorized");
+    }).catch(() => {});
+  }, [router]);
 
   return (
     <div className="min-h-screen bg-[#F4F4F9] text-gray-900 flex">

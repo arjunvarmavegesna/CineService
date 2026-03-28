@@ -25,26 +25,13 @@ const STATUS_COLORS: Record<string, string> = {
 export default function AdminDashboard() {
   const [data, setData] = useState<ReportData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [unauthorized, setUnauthorized] = useState(false);
-  const [bootstrapping, setBootstrapping] = useState(false);
 
   useEffect(() => {
     fetch("/api/admin/reports?days=1")
-      .then((r) => {
-        if (r.status === 401 || r.status === 403) { setUnauthorized(true); setLoading(false); return null; }
-        return r.json();
-      })
-      .then((d) => { if (d) { setData(d.data); setLoading(false); } })
+      .then((r) => r.json())
+      .then((d) => { setData(d.data); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
-
-  const bootstrap = async () => {
-    setBootstrapping(true);
-    const res = await fetch("/api/admin/bootstrap", { method: "POST" });
-    const d = await res.json();
-    if (res.ok) { alert(d.message ?? "Done! Refreshing..."); window.location.reload(); }
-    else { alert(d.error ?? "Bootstrap failed"); setBootstrapping(false); }
-  };
 
   const activeCount = data?.ordersByStatus
     .filter((s) => !["DELIVERED", "CANCELLED", "REFUNDED"].includes(s.status))
@@ -58,25 +45,6 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         <p className="text-gray-400 text-sm mt-1">Today's overview</p>
       </div>
-
-      {unauthorized && (
-        <div className="bg-orange-50 border border-orange-200 rounded-2xl p-5 flex items-start justify-between gap-4">
-          <div>
-            <p className="font-semibold text-orange-800">Admin account not set up</p>
-            <p className="text-sm text-orange-600 mt-1">
-              Your Clerk account isn&apos;t linked to a database user yet. Click &quot;Setup Admin&quot; to create your SUPER_ADMIN account.
-              This only works while there are no admins in the database.
-            </p>
-          </div>
-          <button
-            onClick={bootstrap}
-            disabled={bootstrapping}
-            className="flex-shrink-0 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-colors"
-          >
-            {bootstrapping ? "Setting up..." : "Setup Admin"}
-          </button>
-        </div>
-      )}
 
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
