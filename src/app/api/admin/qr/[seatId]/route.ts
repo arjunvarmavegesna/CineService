@@ -22,7 +22,13 @@ export async function GET(
 
     if (!qr) return NextResponse.json({ error: "QR code not found" }, { status: 404 });
 
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
+    // Fallback to request host if NEXT_PUBLIC_APP_URL is not set
+    const host = req.headers.get("host") ?? "localhost:3000";
+    const protocol = host.startsWith("localhost") ? "http" : "https";
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ??
+      `${protocol}://${host}`;
+
     const qrUrl = `${appUrl}/api/qr/${qr.code}`;
 
     if (format === "svg") {

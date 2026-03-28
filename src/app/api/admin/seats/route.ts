@@ -37,42 +37,63 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const parsed = BulkSeatSchema.safeParse(body);
-    if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
+    }
 
     const { screenId, rows, seatsPerRow } = parsed.data;
 
-    // Get screen to find theaterId for QR codes
+    // 1. Verify screen exists
     const screen = await prisma.screen.findUnique({ where: { id: screenId } });
     if (!screen) return NextResponse.json({ error: "Screen not found" }, { status: 404 });
 
-    const seats = await prisma.$transaction(async (tx) => {
-      const created = [];
-      for (const row of rows) {
-        for (let num = 1; num <= seatsPerRow; num++) {
-          const label = `${row}${num}`;
-          const seat = await tx.seat.upsert({
-            where: { screenId_row_number: { screenId, row, number: num } },
-            create: { screenId, row, number: num, label },
-            update: { isActive: true },
-          });
-          // Create QR code for seat if doesn't exist
-          await tx.qRCode.upsert({
-            where: { seatId: seat.id },
-            create: {
-              seatId: seat.id,
-              theaterId: screen.theaterId,
-              screenId,
-              metadata: { seatLabel: label, screenName: screen.name },
-            },
-            update: {},
-          });
-          created.push(seat);
-        }
-      }
-      return created;
+    // 2. Build all seat records upfront
+    const seatData = rows.flatMap((row) =>
+      Array.from({ length: seatsPerRow }, (_, i) => ({
+        screenId,
+        row,
+        number: i + 1,
+        label: `${row}${i + 1}`,
+      }))
+    );
+
+    // 3. Bulk-insert seats in ONE query (skip existing — handles re-runs safely)
+    await prisma.seat.createMany({
+      data: seatData,
+      skipDuplicates: true,
     });
 
-    return NextResponse.json({ data: seats, count: seats.length }, { status: 201 });
+    // 4. Fetch all seats for the specified rows (newly created + pre-existing)
+    const allSeats = await prisma.seat.findMany({
+      where: { screenId, row: { in: rows } },
+      select: { id: true, label: true },
+    });
+
+    // 5. Find which seats already have QR codes
+    const existingQRs = await prisma.qRCode.findMany({
+      where: { seatId: { in: allSeats.map((s) => s.id) } },
+      select: { seatId: true },
+    });
+    const coveredSeatIds = new Set(existingQRs.map((q) => q.seatId));
+
+    // 6. Bulk-insert missing QR codes in ONE query
+    const newQRData = allSeats
+      .filter((s) => !coveredSeatIds.has(s.id))
+      .map((s) => ({
+        seatId: s.id,
+        theaterId: screen.theaterId,
+        screenId,
+        metadata: { seatLabel: s.label, screenName: screen.name },
+      }));
+
+    if (newQRData.length > 0) {
+      await prisma.qRCode.createMany({
+        data: newQRData,
+        skipDuplicates: true,
+      });
+    }
+
+    return NextResponse.json({ data: allSeats, count: allSeats.length }, { status: 201 });
   } catch (err) {
     console.error("[POST /api/admin/seats]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
