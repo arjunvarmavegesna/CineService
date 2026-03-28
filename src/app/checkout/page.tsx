@@ -89,19 +89,19 @@ function CheckoutContent() {
   // Order success screen
   if (orderId) {
     return (
-      <div className="min-h-screen bg-[#0D0D0F] text-white flex flex-col items-center justify-center px-4">
+      <div className="min-h-screen bg-[#14142A] text-white flex flex-col items-center justify-center px-4">
         <div className="text-center max-w-sm">
           <div className="text-7xl mb-6">🎉</div>
           <h1 className="text-2xl font-black mb-2">Order Placed!</h1>
           <p className="text-white/60 mb-6">
             Your food is being prepared and will be delivered to seat{" "}
-            <span className="text-[#C9A84C] font-bold">{displaySeat}</span>
+            <span className="text-[#E03455] font-bold">{displaySeat}</span>
           </p>
 
-          <div className="bg-[#141417] border border-white/10 rounded-2xl p-5 mb-6 text-left space-y-3">
+          <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-5 mb-6 text-left space-y-3">
             <div className="flex justify-between text-sm">
               <span className="text-white/50">Order number</span>
-              <span className="font-mono font-bold text-[#C9A84C]">{orderNumber}</span>
+              <span className="font-mono font-bold text-[#E03455]">{orderNumber}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-white/50">Seat</span>
@@ -109,7 +109,7 @@ function CheckoutContent() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-white/50">Total paid</span>
-              <span className="font-bold text-[#C9A84C]">₹{total}</span>
+              <span className="font-bold text-[#E03455]">₹{total}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-white/50">Estimated time</span>
@@ -119,7 +119,7 @@ function CheckoutContent() {
 
           <Link
             href={`/order-status/${orderId}`}
-            className="block w-full bg-[#C9A84C] hover:bg-[#D4B863] text-black font-bold py-4 rounded-xl text-center transition-colors mb-3"
+            className="block w-full bg-[#E03455] hover:bg-[#FF4060] text-white font-bold py-4 rounded-xl text-center transition-colors mb-3"
           >
             Track Order Status
           </Link>
@@ -130,22 +130,22 @@ function CheckoutContent() {
   }
 
   if (!hydrated) {
-    return <div className="min-h-screen bg-[#0D0D0F] flex items-center justify-center text-white/50">Loading...</div>;
+    return <div className="min-h-screen bg-[#14142A] flex items-center justify-center text-white/50">Loading...</div>;
   }
 
   return (
-    <div className="min-h-screen bg-[#0D0D0F] text-white">
-      <header className="bg-[#141417] border-b border-white/10 px-4 py-4 flex items-center gap-3">
+    <div className="min-h-screen bg-[#14142A] text-white">
+      <header className="bg-[#1C1C36] border-b border-white/10 px-4 py-4 flex items-center gap-3">
         <button onClick={() => router.back()} className="text-white/50 hover:text-white text-sm">← Back</button>
         <span className="font-semibold">Checkout</span>
       </header>
 
       <div className="max-w-lg mx-auto px-4 py-6 space-y-4">
         {/* Delivery info */}
-        <div className="bg-[#141417] border border-white/10 rounded-2xl p-4">
+        <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-4">
           <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Delivering to</p>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[#C9A84C]/20 rounded-xl flex items-center justify-center text-[#C9A84C] font-black text-lg">{displaySeat}</div>
+            <div className="w-10 h-10 bg-[#E03455]/20 rounded-xl flex items-center justify-center text-[#E03455] font-black text-lg">{displaySeat}</div>
             <div>
               <p className="font-bold">Seat {displaySeat}</p>
               <p className="text-sm text-white/50">{seat?.screenName ?? "—"} · {seat?.theaterName ?? "—"}</p>
@@ -154,7 +154,7 @@ function CheckoutContent() {
         </div>
 
         {/* Order summary */}
-        <div className="bg-[#141417] border border-white/10 rounded-2xl p-4">
+        <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-4">
           <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Order summary</p>
           <div className="space-y-2 mb-4">
             {items.map((item) => (
@@ -170,13 +170,13 @@ function CheckoutContent() {
             <div className="flex justify-between text-sm text-white/60"><span>Packaging</span><span>₹{packaging}</span></div>
             <div className="flex justify-between font-bold text-base pt-2 border-t border-white/10">
               <span>Total</span>
-              <span className="text-[#C9A84C]">₹{total}</span>
+              <span className="text-[#E03455]">₹{total}</span>
             </div>
           </div>
         </div>
 
         {/* Coupon */}
-        <div className="bg-[#141417] border border-white/10 rounded-2xl p-4">
+        <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-4">
           <p className="text-xs text-white/40 uppercase tracking-wide mb-2">Have a coupon?</p>
           <div className="flex gap-2">
             <input
@@ -184,14 +184,14 @@ function CheckoutContent() {
               placeholder="Enter coupon code"
               value={couponCode}
               onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50 placeholder-white/20 uppercase"
+              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50 placeholder-white/20 uppercase"
             />
           </div>
           <p className="text-xs text-white/30 mt-1.5">Try: WELCOME20 for 20% off</p>
         </div>
 
         {/* Contact details */}
-        <div className="bg-[#141417] border border-white/10 rounded-2xl p-4 space-y-3">
+        <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-4 space-y-3">
           <p className="text-xs text-white/40 uppercase tracking-wide">Your details</p>
           <div>
             <label className="text-xs text-white/50 mb-1 block">Name *</label>
@@ -200,7 +200,7 @@ function CheckoutContent() {
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C9A84C]/50 placeholder-white/20"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#E03455]/50 placeholder-white/20"
             />
           </div>
           <div>
@@ -210,7 +210,7 @@ function CheckoutContent() {
               placeholder="+91 98765 43210"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C9A84C]/50 placeholder-white/20"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#E03455]/50 placeholder-white/20"
             />
           </div>
           <div>
@@ -220,7 +220,7 @@ function CheckoutContent() {
               value={instructions}
               onChange={(e) => setInstructions(e.target.value)}
               rows={2}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C9A84C]/50 placeholder-white/20 resize-none"
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#E03455]/50 placeholder-white/20 resize-none"
             />
           </div>
         </div>
@@ -234,7 +234,7 @@ function CheckoutContent() {
         <button
           onClick={placeOrder}
           disabled={loading || items.length === 0}
-          className="w-full bg-[#C9A84C] hover:bg-[#D4B863] disabled:opacity-50 text-black font-bold py-4 rounded-2xl text-lg transition-colors"
+          className="w-full bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-bold py-4 rounded-2xl text-lg transition-colors"
         >
           {loading ? "Placing order..." : `Place Order · ₹${total}`}
         </button>
@@ -247,7 +247,7 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0F] flex items-center justify-center text-white/50">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#14142A] flex items-center justify-center text-white/50">Loading...</div>}>
       <CheckoutContent />
     </Suspense>
   );

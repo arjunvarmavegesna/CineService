@@ -1,59 +1,54 @@
 @import "tailwindcss";
 
 /* ════════════════════════════════════════════════════
-   CINESERVE — Cinema Noir Design System v2.0
-   Premium dark theme for in-seat food ordering
+   CINESERVE — BookMyShow-Inspired Cinema Dark v3.0
+   Deep navy backgrounds + vivid red primary accent
    ════════════════════════════════════════════════════
 
-   PALETTE STRATEGY
+   PALETTE
    ─────────────────────────────────────────────────────
-   Background:   #0D0D0F  deep warm black (page)
-   Surface:      #141417  card / modal / drawer
-   Elevated:     #1C1C20  kanban columns / raised cards
-   Sidebar:      #0A0A0C  admin sidebar (deepest)
-   Gold accent:  #C9A84C  premium muted gold (primary)
-   Gold hover:   #D4B863  slightly brighter on hover
-   Red accent:   #E63946  cinematic / destructive
+   Background:   #14142A  deep dark navy (page)
+   Surface:      #1C1C36  card / modal / drawer
+   Elevated:     #24244A  kanban columns / raised cards
+   Sidebar:      #0E0E1E  admin sidebar (deepest)
+   Red accent:   #E03455  BMS primary (buttons, CTAs)
+   Red hover:    #FF4060  brighter on hover
+   Border:       rgba(255,255,255,0.08)
    ════════════════════════════════════════════════════ */
 
 :root {
   /* ── Page Layers ── */
-  --cs-bg:          #0D0D0F;
-  --cs-surface:     #141417;
-  --cs-elevated:    #1C1C20;
-  --cs-sidebar:     #0A0A0C;
+  --cs-bg:          #14142A;
+  --cs-surface:     #1C1C36;
+  --cs-elevated:    #24244A;
+  --cs-sidebar:     #0E0E1E;
 
-  /* ── Gold Accent ── */
-  --cs-gold:        #C9A84C;
-  --cs-gold-hover:  #D4B863;
-  --cs-gold-10:     rgba(201, 168, 76, 0.10);
-  --cs-gold-15:     rgba(201, 168, 76, 0.15);
-  --cs-gold-20:     rgba(201, 168, 76, 0.20);
-  --cs-gold-30:     rgba(201, 168, 76, 0.30);
-  --cs-gold-50:     rgba(201, 168, 76, 0.50);
-
-  /* ── Red Accent ── */
-  --cs-red:         #E63946;
-  --cs-red-10:      rgba(230, 57, 70, 0.10);
-  --cs-red-20:      rgba(230, 57, 70, 0.20);
+  /* ── Red Accent (BMS primary) ── */
+  --cs-red:         #E03455;
+  --cs-red-hover:   #FF4060;
+  --cs-red-10:      rgba(224, 52, 85, 0.10);
+  --cs-red-15:      rgba(224, 52, 85, 0.15);
+  --cs-red-20:      rgba(224, 52, 85, 0.20);
+  --cs-red-30:      rgba(224, 52, 85, 0.30);
+  --cs-red-50:      rgba(224, 52, 85, 0.50);
 
   /* ── Text ── */
-  --cs-text:        #F0F0F2;
-  --cs-text-sub:    rgba(255, 255, 255, 0.50);
+  --cs-text:        #F0F0F5;
+  --cs-text-sub:    rgba(255, 255, 255, 0.55);
   --cs-text-muted:  rgba(255, 255, 255, 0.30);
 
   /* ── Borders ── */
-  --cs-border:      #27272B;
-  --cs-border-sub:  rgba(255, 255, 255, 0.06);
+  --cs-border:      rgba(255, 255, 255, 0.08);
+  --cs-border-sub:  rgba(255, 255, 255, 0.05);
 
   /* ── Inputs ── */
   --cs-input:       rgba(255, 255, 255, 0.05);
   --cs-input-b:     rgba(255, 255, 255, 0.10);
-  --cs-focus:       rgba(201, 168, 76, 0.50);
+  --cs-focus:       rgba(224, 52, 85, 0.50);
 
   /* ── Semantic ── */
   --cs-success: #22C55E;
-  --cs-warning: #EAB308;
+  --cs-warning: #F59E0B;
   --cs-error:   #EF4444;
   --cs-info:    #3B82F6;
 }
@@ -76,11 +71,11 @@ body {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #2A2A2E; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #363639; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
 
 /* ── Select options in dark theme ── */
 select option {
-  background-color: #141417;
-  color: #F0F0F2;
+  background-color: #1C1C36;
+  color: #F0F0F5;
 }

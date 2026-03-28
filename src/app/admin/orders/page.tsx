@@ -15,7 +15,7 @@ interface Order {
 const COLUMNS = [
   { key: "PENDING", label: "New Orders", color: "text-blue-400", dot: "bg-blue-500" },
   { key: "CONFIRMED", label: "Confirmed", color: "text-cyan-400", dot: "bg-cyan-500" },
-  { key: "PREPARING", label: "Preparing", color: "text-[#C9A84C]", dot: "bg-[#C9A84C]" },
+  { key: "PREPARING", label: "Preparing", color: "text-orange-400", dot: "bg-orange-500" },
   { key: "READY", label: "Ready", color: "text-yellow-400", dot: "bg-yellow-400" },
   { key: "OUT_FOR_DELIVERY", label: "On the Way", color: "text-purple-400", dot: "bg-purple-500" },
   { key: "DELIVERED", label: "Delivered", color: "text-green-400", dot: "bg-green-500" },
@@ -110,7 +110,7 @@ export default function LiveOrdersPage() {
             {COLUMNS.map((col) => {
               const colOrders = orders.filter((o) => o.status === col.key);
               return (
-                <div key={col.key} className="w-64 bg-[#1C1C20] border border-white/10 rounded-2xl overflow-hidden flex flex-col">
+                <div key={col.key} className="w-64 bg-[#24244A] border border-white/10 rounded-2xl overflow-hidden flex flex-col">
                   <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${col.dot} ${col.key === "PENDING" && colOrders.length > 0 ? "animate-pulse" : ""}`} />
@@ -126,9 +126,9 @@ export default function LiveOrdersPage() {
                       colOrders.map((order) => {
                         const urgent = isUrgent(order);
                         return (
-                          <div key={order.id} className={`bg-[#141417] border rounded-xl p-3 space-y-2 ${urgent ? "border-red-500/40" : "border-white/10"}`}>
+                          <div key={order.id} className={`bg-[#1C1C36] border rounded-xl p-3 space-y-2 ${urgent ? "border-red-500/40" : "border-white/10"}`}>
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-mono text-[#C9A84C] font-bold">{order.orderNumber}</span>
+                              <span className="text-xs font-mono text-[#E03455] font-bold">{order.orderNumber}</span>
                               {urgent && (
                                 <span className="text-[10px] text-red-400 bg-red-500/10 border border-red-500/20 px-1.5 py-0.5 rounded">URGENT</span>
                               )}
@@ -155,7 +155,7 @@ export default function LiveOrdersPage() {
                                   <button
                                     onClick={() => advanceStatus(order)}
                                     disabled={advancing === order.id}
-                                    className="text-xs bg-[#C9A84C]/20 hover:bg-[#C9A84C] hover:text-black text-[#C9A84C] border border-[#C9A84C]/30 px-2 py-1.5 rounded-lg font-semibold transition-all disabled:opacity-50"
+                                    className="text-xs bg-[#E03455]/20 hover:bg-[#E03455] hover:text-white text-[#E03455] border border-[#E03455]/30 px-2 py-1.5 rounded-lg font-semibold transition-all disabled:opacity-50"
                                   >
                                     {advancing === order.id ? "..." : `${NEXT_LABEL[order.status]} →`}
                                   </button>

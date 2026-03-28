@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 
-interface Category { id: string; name: string; icon?: string }
+interface Category { id: string; name: string; icon?: string; _count?: { menuItems: number } }
 interface MenuItem {
   id: string; name: string; description?: string; basePrice: number;
   isVeg: boolean; status: string; isFeatured: boolean;
@@ -31,6 +31,10 @@ export default function MenuPage() {
   const [editing, setEditing] = useState<MenuItem | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [catModal, setCatModal] = useState(false);
+  const [catName, setCatName] = useState("");
+  const [catIcon, setCatIcon] = useState("");
+  const [savingCat, setSavingCat] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,6 +80,19 @@ export default function MenuPage() {
     setSaving(false);
   };
 
+  const addCategory = async () => {
+    if (!catName.trim()) return;
+    setSavingCat(true);
+    await fetch("/api/admin/categories", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: catName.trim(), icon: catIcon.trim() || undefined }),
+    });
+    setCatName(""); setCatIcon("");
+    setSavingCat(false);
+    load();
+  };
+
   const toggleStatus = async (item: MenuItem) => {
     const next = item.status === "AVAILABLE" ? "OUT_OF_STOCK" : "AVAILABLE";
     await fetch(`/api/admin/menu/${item.id}`, {
@@ -99,12 +116,20 @@ export default function MenuPage() {
           <h1 className="text-xl font-bold">Menu Items</h1>
           <p className="text-sm text-white/40 mt-0.5">{items.length} items across {categories.length} categories</p>
         </div>
-        <button
-          onClick={openAdd}
-          className="bg-[#C9A84C] hover:bg-[#D4B863] text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors"
-        >
-          + Add Item
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setCatModal(true)}
+            className="border border-white/10 text-white/60 hover:text-white hover:border-white/20 px-3 py-2 rounded-xl text-sm transition-colors"
+          >
+            Categories ({categories.length})
+          </button>
+          <button
+            onClick={openAdd}
+            className="bg-[#E03455] hover:bg-[#FF4060] text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors"
+          >
+            + Add Item
+          </button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -113,12 +138,12 @@ export default function MenuPage() {
           placeholder="Search items..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm placeholder-white/30 focus:outline-none focus:border-[#C9A84C]/50 w-56"
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm placeholder-white/30 focus:outline-none focus:border-[#E03455]/50 w-56"
         />
         <select
           value={filterCat}
           onChange={(e) => setFilterCat(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#C9A84C]/50"
+          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#E03455]/50"
         >
           <option value="">All categories</option>
           {categories.map((c) => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
@@ -129,7 +154,7 @@ export default function MenuPage() {
       {loading ? (
         <div className="text-white/40 text-center py-16">Loading...</div>
       ) : (
-        <div className="bg-[#141417] border border-white/[0.06] rounded-2xl overflow-hidden">
+        <div className="bg-[#1C1C36] border border-white/[0.06] rounded-2xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/[0.06]">
@@ -149,12 +174,12 @@ export default function MenuPage() {
                       <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.isVeg ? "bg-green-500" : "bg-red-500"}`} />
                       <div>
                         <p className="font-medium">{item.name}</p>
-                        {item.isFeatured && <span className="text-[10px] text-[#C9A84C]">⭐ Featured</span>}
+                        {item.isFeatured && <span className="text-[10px] text-[#E03455]">⭐ Featured</span>}
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-white/60">{item.category.name}</td>
-                  <td className="px-4 py-3 font-semibold text-[#C9A84C]">₹{item.basePrice}</td>
+                  <td className="px-4 py-3 font-semibold text-[#E03455]">₹{item.basePrice}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[item.status]}`}>
                       {item.status.replace("_", " ")}
@@ -171,7 +196,7 @@ export default function MenuPage() {
                       </button>
                       <button
                         onClick={() => openEdit(item)}
-                        className="text-xs border border-white/10 hover:border-[#C9A84C]/50 px-2 py-1 rounded-lg text-white/50 hover:text-[#C9A84C] transition-colors"
+                        className="text-xs border border-white/10 hover:border-[#E03455]/50 px-2 py-1 rounded-lg text-white/50 hover:text-[#E03455] transition-colors"
                       >
                         Edit
                       </button>
@@ -188,11 +213,67 @@ export default function MenuPage() {
       )}
 
       {/* Modal */}
+      {/* Category Modal */}
+      {catModal && (
+        <>
+          <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setCatModal(false)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-6 w-full max-w-sm max-h-[85vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="font-bold text-lg">Manage Categories</h2>
+                <button onClick={() => setCatModal(false)} className="text-white/40 hover:text-white text-xl">✕</button>
+              </div>
+
+              <div className="space-y-2 mb-5">
+                {categories.length === 0 ? (
+                  <p className="text-center py-6 text-white/30 text-sm">No categories yet. Add one below.</p>
+                ) : (
+                  categories.map((cat) => (
+                    <div key={cat.id} className="flex items-center gap-3 bg-white/5 rounded-xl px-4 py-2.5">
+                      <span className="text-lg">{cat.icon ?? "📁"}</span>
+                      <span className="text-sm font-medium flex-1">{cat.name}</span>
+                      <span className="text-xs text-white/30">{cat._count?.menuItems ?? 0} items</span>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <div className="border-t border-white/10 pt-4 space-y-3">
+                <p className="text-xs text-white/40 uppercase tracking-wide">Add New Category</p>
+                <div className="flex gap-2">
+                  <input
+                    value={catIcon}
+                    onChange={(e) => setCatIcon(e.target.value)}
+                    placeholder="🍿"
+                    maxLength={2}
+                    className="w-14 bg-white/5 border border-white/10 rounded-xl text-center py-2.5 text-lg focus:outline-none"
+                  />
+                  <input
+                    value={catName}
+                    onChange={(e) => setCatName(e.target.value)}
+                    placeholder="e.g. Combos"
+                    onKeyDown={(e) => e.key === "Enter" && addCategory()}
+                    className="flex-1 bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                  />
+                </div>
+                <button
+                  onClick={addCategory}
+                  disabled={savingCat || !catName.trim()}
+                  className="w-full bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                >
+                  {savingCat ? "Adding..." : "Add Category"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {modal && (
         <>
           <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#141417] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">{modal === "add" ? "Add Menu Item" : "Edit Menu Item"}</h2>
                 <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
@@ -204,7 +285,7 @@ export default function MenuPage() {
                   <input
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                     placeholder="e.g. Butter Popcorn"
                   />
                 </div>
@@ -214,7 +295,7 @@ export default function MenuPage() {
                   <textarea
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50 resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50 resize-none"
                     rows={2}
                   />
                 </div>
@@ -226,7 +307,7 @@ export default function MenuPage() {
                       type="number"
                       value={form.basePrice}
                       onChange={(e) => setForm({ ...form, basePrice: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                       placeholder="0"
                     />
                   </div>
@@ -235,7 +316,7 @@ export default function MenuPage() {
                     <select
                       value={form.categoryId}
                       onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                     >
                       {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
@@ -247,7 +328,7 @@ export default function MenuPage() {
                   <select
                     value={form.status}
                     onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                   >
                     <option value="AVAILABLE">Available</option>
                     <option value="OUT_OF_STOCK">Out of Stock</option>
@@ -270,7 +351,7 @@ export default function MenuPage() {
                       type="checkbox"
                       checked={form.isFeatured}
                       onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
-                      className="accent-[#C9A84C]"
+                      className="accent-[#E03455]"
                     />
                     <span className="text-sm text-white/70">Featured</span>
                   </label>
@@ -284,7 +365,7 @@ export default function MenuPage() {
                 <button
                   onClick={save}
                   disabled={saving || !form.name || !form.basePrice || !form.categoryId}
-                  className="flex-1 bg-[#C9A84C] hover:bg-[#D4B863] disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                  className="flex-1 bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm transition-colors"
                 >
                   {saving ? "Saving..." : modal === "add" ? "Add Item" : "Save Changes"}
                 </button>

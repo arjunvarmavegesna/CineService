@@ -91,7 +91,7 @@ export default function SettingsPage() {
                 key={t.id}
                 onClick={() => selectTheater(t)}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm
-                  ${selected?.id === t.id ? "bg-[#C9A84C]/15 border-[#C9A84C]/40 text-[#C9A84C]" : "bg-white/5 border-white/10 text-white/60 hover:text-white hover:border-white/20"}`}
+                  ${selected?.id === t.id ? "bg-[#E03455]/15 border-[#E03455]/40 text-[#E03455]" : "bg-white/5 border-white/10 text-white/60 hover:text-white hover:border-white/20"}`}
               >
                 <p className="font-medium">{t.name}</p>
                 <p className="text-xs opacity-60 mt-0.5">{t.city}</p>
@@ -103,7 +103,7 @@ export default function SettingsPage() {
         {/* Settings Form */}
         <div className="lg:col-span-2">
           {selected ? (
-            <div className="bg-[#141417] border border-white/[0.06] rounded-2xl p-6">
+            <div className="bg-[#1C1C36] border border-white/[0.06] rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-semibold">{selected.name}</h2>
                 {saved && (
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                           type="number"
                           value={form[key as keyof typeof form]}
                           onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                         />
                         <p className="text-xs text-white/30 mt-1">{desc}</p>
                       </div>
@@ -158,7 +158,7 @@ export default function SettingsPage() {
                     )}
                     <div className="flex justify-between font-bold text-base border-t border-white/10 pt-2">
                       <span>Total</span>
-                      <span className="text-[#C9A84C]">₹{(sampleOrder + tax + pkg + svc).toFixed(0)}</span>
+                      <span className="text-[#E03455]">₹{(sampleOrder + tax + pkg + svc).toFixed(0)}</span>
                     </div>
                   </div>
                 </div>
@@ -173,7 +173,7 @@ export default function SettingsPage() {
                 <button
                   onClick={save}
                   disabled={saving}
-                  className="w-full bg-[#C9A84C] hover:bg-[#D4B863] disabled:opacity-50 text-black font-semibold py-3 rounded-xl transition-colors"
+                  className="w-full bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
                 >
                   {saving ? "Saving..." : "Save Settings"}
                 </button>
