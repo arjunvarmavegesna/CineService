@@ -56,7 +56,7 @@ export default function ReportsPage() {
         <select
           value={days}
           onChange={(e) => setDays(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-500/50"
+          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#C9A84C]/50"
         >
           <option value="1">Today</option>
           <option value="7">Last 7 days</option>
@@ -75,11 +75,11 @@ export default function ReportsPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               { label: "Total Orders", value: data.totalOrders.toString(), sub: `Last ${days} days`, color: "text-white" },
-              { label: "Revenue", value: formatCurrency(data.totalRevenue), sub: "excl. cancelled", color: "text-amber-400" },
+              { label: "Revenue", value: formatCurrency(data.totalRevenue), sub: "excl. cancelled", color: "text-[#C9A84C]" },
               { label: "Avg Order Value", value: formatCurrency(avgOrderValue), sub: "per order", color: "text-green-400" },
               { label: "Completion Rate", value: data.totalOrders > 0 ? `${Math.round((deliveredCount / data.totalOrders) * 100)}%` : "—", sub: `${cancelledCount} cancelled`, color: "text-blue-400" },
             ].map((card) => (
-              <div key={card.label} className="bg-[#0a0d12] border border-white/[0.06] rounded-2xl p-5">
+              <div key={card.label} className="bg-[#141417] border border-white/[0.06] rounded-2xl p-5">
                 <p className="text-white/40 text-xs mb-2">{card.label}</p>
                 <p className={`text-2xl font-black ${card.color}`}>{card.value}</p>
                 <p className="text-white/30 text-xs mt-1">{card.sub}</p>
@@ -89,7 +89,7 @@ export default function ReportsPage() {
 
           <div className="grid lg:grid-cols-2 gap-5">
             {/* Orders by status */}
-            <div className="bg-[#0a0d12] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#141417] border border-white/[0.06] rounded-2xl p-5">
               <h2 className="font-semibold mb-4">Orders by Status</h2>
               <div className="space-y-3">
                 {data.ordersByStatus
@@ -105,7 +105,7 @@ export default function ReportsPage() {
                           <span className="text-white/60">{s._count} ({pct.toFixed(0)}%)</span>
                         </div>
                         <div className="w-full bg-white/5 rounded-full h-1.5">
-                          <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${pct}%` }} />
+                          <div className="bg-[#C9A84C] h-1.5 rounded-full" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
                     );
@@ -115,7 +115,7 @@ export default function ReportsPage() {
             </div>
 
             {/* Top selling items */}
-            <div className="bg-[#0a0d12] border border-white/[0.06] rounded-2xl p-5">
+            <div className="bg-[#141417] border border-white/[0.06] rounded-2xl p-5">
               <h2 className="font-semibold mb-4">Top Selling Items</h2>
               <div className="space-y-3">
                 {data.topItems.map((item, i) => {
@@ -141,7 +141,7 @@ export default function ReportsPage() {
           </div>
 
           {/* Recent orders */}
-          <div className="bg-[#0a0d12] border border-white/[0.06] rounded-2xl overflow-hidden">
+          <div className="bg-[#141417] border border-white/[0.06] rounded-2xl overflow-hidden">
             <div className="px-5 py-4 border-b border-white/[0.06]">
               <h2 className="font-semibold">Recent Orders</h2>
             </div>
@@ -159,7 +159,7 @@ export default function ReportsPage() {
               <tbody>
                 {data.recentOrders.map((order, i) => (
                   <tr key={order.orderNumber} className={`border-b border-white/[0.04] ${i === data.recentOrders.length - 1 ? "border-b-0" : ""}`}>
-                    <td className="px-5 py-3 font-mono font-bold text-amber-400">{order.orderNumber}</td>
+                    <td className="px-5 py-3 font-mono font-bold text-[#C9A84C]">{order.orderNumber}</td>
                     <td className="px-5 py-3 text-white/60">{order.theater.name}</td>
                     <td className="px-5 py-3 font-bold">{order.seatLabel}</td>
                     <td className="px-5 py-3 font-semibold">{formatCurrency(order.totalAmount)}</td>

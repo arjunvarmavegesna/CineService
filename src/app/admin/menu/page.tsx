@@ -101,7 +101,7 @@ export default function MenuPage() {
         </div>
         <button
           onClick={openAdd}
-          className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors"
+          className="bg-[#C9A84C] hover:bg-[#D4B863] text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors"
         >
           + Add Item
         </button>
@@ -113,12 +113,12 @@ export default function MenuPage() {
           placeholder="Search items..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 w-56"
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm placeholder-white/30 focus:outline-none focus:border-[#C9A84C]/50 w-56"
         />
         <select
           value={filterCat}
           onChange={(e) => setFilterCat(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-500/50"
+          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#C9A84C]/50"
         >
           <option value="">All categories</option>
           {categories.map((c) => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
@@ -129,7 +129,7 @@ export default function MenuPage() {
       {loading ? (
         <div className="text-white/40 text-center py-16">Loading...</div>
       ) : (
-        <div className="bg-[#0a0d12] border border-white/[0.06] rounded-2xl overflow-hidden">
+        <div className="bg-[#141417] border border-white/[0.06] rounded-2xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/[0.06]">
@@ -149,12 +149,12 @@ export default function MenuPage() {
                       <div className={`w-2 h-2 rounded-full flex-shrink-0 ${item.isVeg ? "bg-green-500" : "bg-red-500"}`} />
                       <div>
                         <p className="font-medium">{item.name}</p>
-                        {item.isFeatured && <span className="text-[10px] text-amber-400">⭐ Featured</span>}
+                        {item.isFeatured && <span className="text-[10px] text-[#C9A84C]">⭐ Featured</span>}
                       </div>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-white/60">{item.category.name}</td>
-                  <td className="px-4 py-3 font-semibold text-amber-400">₹{item.basePrice}</td>
+                  <td className="px-4 py-3 font-semibold text-[#C9A84C]">₹{item.basePrice}</td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${STATUS_COLORS[item.status]}`}>
                       {item.status.replace("_", " ")}
@@ -171,7 +171,7 @@ export default function MenuPage() {
                       </button>
                       <button
                         onClick={() => openEdit(item)}
-                        className="text-xs border border-white/10 hover:border-amber-500/50 px-2 py-1 rounded-lg text-white/50 hover:text-amber-400 transition-colors"
+                        className="text-xs border border-white/10 hover:border-[#C9A84C]/50 px-2 py-1 rounded-lg text-white/50 hover:text-[#C9A84C] transition-colors"
                       >
                         Edit
                       </button>
@@ -192,7 +192,7 @@ export default function MenuPage() {
         <>
           <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#141418] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="bg-[#141417] border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">{modal === "add" ? "Add Menu Item" : "Edit Menu Item"}</h2>
                 <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
@@ -204,7 +204,7 @@ export default function MenuPage() {
                   <input
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                     placeholder="e.g. Butter Popcorn"
                   />
                 </div>
@@ -214,7 +214,7 @@ export default function MenuPage() {
                   <textarea
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50 resize-none"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50 resize-none"
                     rows={2}
                   />
                 </div>
@@ -226,7 +226,7 @@ export default function MenuPage() {
                       type="number"
                       value={form.basePrice}
                       onChange={(e) => setForm({ ...form, basePrice: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                       placeholder="0"
                     />
                   </div>
@@ -235,7 +235,7 @@ export default function MenuPage() {
                     <select
                       value={form.categoryId}
                       onChange={(e) => setForm({ ...form, categoryId: e.target.value })}
-                      className="w-full bg-[#0a0d12] border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                     >
                       {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
@@ -247,7 +247,7 @@ export default function MenuPage() {
                   <select
                     value={form.status}
                     onChange={(e) => setForm({ ...form, status: e.target.value })}
-                    className="w-full bg-[#0a0d12] border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                   >
                     <option value="AVAILABLE">Available</option>
                     <option value="OUT_OF_STOCK">Out of Stock</option>
@@ -270,7 +270,7 @@ export default function MenuPage() {
                       type="checkbox"
                       checked={form.isFeatured}
                       onChange={(e) => setForm({ ...form, isFeatured: e.target.checked })}
-                      className="accent-amber-500"
+                      className="accent-[#C9A84C]"
                     />
                     <span className="text-sm text-white/70">Featured</span>
                   </label>
@@ -284,7 +284,7 @@ export default function MenuPage() {
                 <button
                   onClick={save}
                   disabled={saving || !form.name || !form.basePrice || !form.categoryId}
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm transition-colors"
+                  className="flex-1 bg-[#C9A84C] hover:bg-[#D4B863] disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm transition-colors"
                 >
                   {saving ? "Saving..." : modal === "add" ? "Add Item" : "Save Changes"}
                 </button>

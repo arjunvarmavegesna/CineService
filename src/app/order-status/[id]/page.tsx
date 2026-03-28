@@ -55,7 +55,7 @@ export default function OrderStatusPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-white/50">
+      <div className="min-h-screen bg-[#0D0D0F] flex items-center justify-center text-white/50">
         Loading order...
       </div>
     );
@@ -63,11 +63,11 @@ export default function OrderStatusPage() {
 
   if (notFound || !order) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#0D0D0F] flex items-center justify-center text-white">
         <div className="text-center">
           <p className="text-4xl mb-4">😔</p>
           <p className="text-white/60 mb-4">Order not found</p>
-          <Link href="/" className="text-amber-400 hover:underline">Go home</Link>
+          <Link href="/" className="text-[#C9A84C] hover:underline">Go home</Link>
         </div>
       </div>
     );
@@ -83,16 +83,16 @@ export default function OrderStatusPage() {
     : null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
-      <header className="bg-[#141418] border-b border-white/10 px-4 py-4 flex items-center gap-3">
+    <div className="min-h-screen bg-[#0D0D0F] text-white">
+      <header className="bg-[#141417] border-b border-white/10 px-4 py-4 flex items-center gap-3">
         <button onClick={() => router.push("/")} className="text-white/50 hover:text-white text-sm">← Home</button>
         <span className="font-semibold">Order Status</span>
-        <span className="ml-auto font-mono text-xs text-amber-400 font-bold">{order.orderNumber}</span>
+        <span className="ml-auto font-mono text-xs text-[#C9A84C] font-bold">{order.orderNumber}</span>
       </header>
 
       <div className="max-w-lg mx-auto px-4 py-6 space-y-5">
         {/* Seat info */}
-        <div className={`rounded-2xl p-5 border ${isCancelled ? "bg-red-500/10 border-red-500/20" : "bg-amber-500/10 border-amber-500/30"}`}>
+        <div className={`rounded-2xl p-5 border ${isCancelled ? "bg-red-500/10 border-red-500/20" : "bg-[#C9A84C]/10 border-[#C9A84C]/30"}`}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-white/60">{order.theater.name}</p>
@@ -101,7 +101,7 @@ export default function OrderStatusPage() {
             </div>
             <div className="text-right">
               <p className="text-xs text-white/50">Seat</p>
-              <p className={`text-4xl font-black ${isCancelled ? "text-red-400" : "text-amber-400"}`}>{order.seatLabel}</p>
+              <p className={`text-4xl font-black ${isCancelled ? "text-red-400" : "text-[#C9A84C]"}`}>{order.seatLabel}</p>
             </div>
           </div>
           {!isCancelled && etaText && (
@@ -117,7 +117,7 @@ export default function OrderStatusPage() {
 
         {/* Status timeline */}
         {!isCancelled && (
-          <div className="bg-[#141418] border border-white/10 rounded-2xl p-5">
+          <div className="bg-[#141417] border border-white/10 rounded-2xl p-5">
             <p className="text-xs text-white/40 uppercase tracking-wide mb-4">Order Progress</p>
             <div className="space-y-4">
               {STATUS_STEPS.map((step, i) => {
@@ -128,7 +128,7 @@ export default function OrderStatusPage() {
                   <div key={step.key} className="flex gap-4">
                     <div className="flex flex-col items-center">
                       <div className={`w-9 h-9 rounded-full flex items-center justify-center text-base flex-shrink-0 border-2
-                        ${done ? "bg-green-500 border-green-500" : active ? "border-amber-500 bg-amber-500/10" : "border-white/10 bg-transparent"}`}>
+                        ${done ? "bg-green-500 border-green-500" : active ? "border-[#C9A84C] bg-[#C9A84C]/10" : "border-white/10 bg-transparent"}`}>
                         {done ? "✓" : active ? <span className="animate-pulse">{step.icon}</span> : <span className="text-white/20">{step.icon}</span>}
                       </div>
                       {i < STATUS_STEPS.length - 1 && (
@@ -138,7 +138,7 @@ export default function OrderStatusPage() {
                     <div className="pt-1.5">
                       <p className={`text-sm font-medium ${done ? "text-white/60" : active ? "text-white" : "text-white/30"}`}>
                         {step.label}
-                        {active && <span className="ml-2 text-amber-400 text-xs">← Now</span>}
+                        {active && <span className="ml-2 text-[#C9A84C] text-xs">← Now</span>}
                       </p>
                       {(done || active) && (
                         <p className="text-xs text-white/40">{step.desc}</p>
@@ -152,7 +152,7 @@ export default function OrderStatusPage() {
         )}
 
         {/* Order items */}
-        <div className="bg-[#141418] border border-white/10 rounded-2xl p-5">
+        <div className="bg-[#141417] border border-white/10 rounded-2xl p-5">
           <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Your Order</p>
           <div className="space-y-2 mb-4">
             {order.items.map((item, i) => (
@@ -168,7 +168,7 @@ export default function OrderStatusPage() {
             <div className="flex justify-between text-sm text-white/50"><span>Packaging</span><span>{formatCurrency(order.packagingFee)}</span></div>
             <div className="flex justify-between font-bold text-base pt-2 border-t border-white/10">
               <span>Total</span>
-              <span className="text-amber-400">{formatCurrency(order.totalAmount)}</span>
+              <span className="text-[#C9A84C]">{formatCurrency(order.totalAmount)}</span>
             </div>
           </div>
         </div>

@@ -132,21 +132,21 @@ export default function TheatersPage() {
           <p className="text-sm text-white/40 mt-0.5">Manage theaters, screens, seats, and QR codes</p>
         </div>
         {tab === "theaters" && (
-          <button onClick={() => setModal("add-theater")} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+          <button onClick={() => setModal("add-theater")} className="bg-[#C9A84C] hover:bg-[#D4B863] text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
             + Add Theater
           </button>
         )}
         {tab === "screens" && selectedTheater && (
-          <button onClick={() => setModal("add-screen")} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+          <button onClick={() => setModal("add-screen")} className="bg-[#C9A84C] hover:bg-[#D4B863] text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
             + Add Screen
           </button>
         )}
         {tab === "seats" && selectedScreen && (
           <div className="flex gap-2">
-            <button onClick={downloadAllQRs} className="border border-white/10 hover:border-amber-500/50 text-white/60 hover:text-amber-400 px-3 py-2 rounded-xl text-sm transition-colors">
+            <button onClick={downloadAllQRs} className="border border-white/10 hover:border-[#C9A84C]/50 text-white/60 hover:text-[#C9A84C] px-3 py-2 rounded-xl text-sm transition-colors">
               ↓ Download All QRs
             </button>
-            <button onClick={() => setModal("bulk-seats")} className="bg-amber-500 hover:bg-amber-400 text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+            <button onClick={() => setModal("bulk-seats")} className="bg-[#C9A84C] hover:bg-[#D4B863] text-black font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
               + Generate Seats
             </button>
           </div>
@@ -185,7 +185,7 @@ export default function TheatersPage() {
             <div className="grid gap-3">
               {theaters.map((t) => (
                 <button key={t.id} onClick={() => selectTheater(t)}
-                  className="w-full text-left bg-[#0a0d12] border border-white/[0.06] hover:border-amber-500/30 rounded-2xl p-5 transition-all group">
+                  className="w-full text-left bg-[#141417] border border-white/[0.06] hover:border-[#C9A84C]/30 rounded-2xl p-5 transition-all group">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
@@ -198,7 +198,7 @@ export default function TheatersPage() {
                     <div className="text-right">
                       <div className="flex gap-4 text-sm mb-2">
                         <div className="text-center">
-                          <p className="font-bold text-amber-400">{t._count.screens}</p>
+                          <p className="font-bold text-[#C9A84C]">{t._count.screens}</p>
                           <p className="text-white/40 text-xs">Screens</p>
                         </div>
                         <div className="text-center">
@@ -206,7 +206,7 @@ export default function TheatersPage() {
                           <p className="text-white/40 text-xs">Orders</p>
                         </div>
                       </div>
-                      <span className="text-xs text-amber-400 group-hover:text-amber-300">Manage →</span>
+                      <span className="text-xs text-[#C9A84C] group-hover:text-[#D4B863]">Manage →</span>
                     </div>
                   </div>
                 </button>
@@ -222,16 +222,16 @@ export default function TheatersPage() {
             <div className="grid gap-3">
               {screens.map((s) => (
                 <button key={s.id} onClick={() => selectScreen(s)}
-                  className="w-full text-left bg-[#0a0d12] border border-white/[0.06] hover:border-amber-500/30 rounded-2xl p-5 transition-all group">
+                  className="w-full text-left bg-[#141417] border border-white/[0.06] hover:border-[#C9A84C]/30 rounded-2xl p-5 transition-all group">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-semibold mb-1">{s.name}</h3>
                       <p className="text-sm text-white/50">Screen #{s.number} · {s.capacity} seats</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-amber-400">{s._count.seats}</p>
+                      <p className="font-bold text-[#C9A84C]">{s._count.seats}</p>
                       <p className="text-white/40 text-xs">Seats configured</p>
-                      <span className="text-xs text-amber-400 group-hover:text-amber-300 block mt-1">Manage seats →</span>
+                      <span className="text-xs text-[#C9A84C] group-hover:text-[#D4B863] block mt-1">Manage seats →</span>
                     </div>
                   </div>
                 </button>
@@ -257,7 +257,7 @@ export default function TheatersPage() {
                       <div key={seat.id} className="relative group">
                         <button
                           onClick={() => downloadQR(seat.id, seat.label)}
-                          className="w-8 h-7 rounded bg-white/10 hover:bg-amber-500 hover:text-black text-white/60 text-[10px] font-bold transition-all"
+                          className="w-8 h-7 rounded bg-white/10 hover:bg-[#C9A84C] hover:text-black text-white/60 text-[10px] font-bold transition-all"
                           title={`Download QR for ${seat.label}`}
                         >
                           {seat.number}
@@ -283,7 +283,7 @@ export default function TheatersPage() {
         <>
           <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#141418] border border-white/10 rounded-2xl p-6 w-full max-w-md">
+            <div className="bg-[#141417] border border-white/10 rounded-2xl p-6 w-full max-w-md">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">Add Theater</h2>
                 <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
@@ -301,7 +301,7 @@ export default function TheatersPage() {
                     <input
                       value={theaterForm[key as keyof typeof theaterForm]}
                       onChange={(e) => setTheaterForm({ ...theaterForm, [key]: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                       placeholder={placeholder}
                     />
                   </div>
@@ -310,7 +310,7 @@ export default function TheatersPage() {
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setModal(null)} className="flex-1 border border-white/10 text-white/60 hover:text-white py-2.5 rounded-xl text-sm">Cancel</button>
                 <button onClick={addTheater} disabled={saving || !theaterForm.name || !theaterForm.city}
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm">
+                  className="flex-1 bg-[#C9A84C] hover:bg-[#D4B863] disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm">
                   {saving ? "Adding..." : "Add Theater"}
                 </button>
               </div>
@@ -324,7 +324,7 @@ export default function TheatersPage() {
         <>
           <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#141418] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="bg-[#141417] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">Add Screen</h2>
                 <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
@@ -341,7 +341,7 @@ export default function TheatersPage() {
                       type={type ?? "text"}
                       value={screenForm[key as keyof typeof screenForm]}
                       onChange={(e) => setScreenForm({ ...screenForm, [key]: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                       placeholder={placeholder}
                     />
                   </div>
@@ -350,7 +350,7 @@ export default function TheatersPage() {
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setModal(null)} className="flex-1 border border-white/10 text-white/60 py-2.5 rounded-xl text-sm">Cancel</button>
                 <button onClick={addScreen} disabled={saving || !screenForm.name || !screenForm.number}
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm">
+                  className="flex-1 bg-[#C9A84C] hover:bg-[#D4B863] disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm">
                   {saving ? "Adding..." : "Add Screen"}
                 </button>
               </div>
@@ -364,7 +364,7 @@ export default function TheatersPage() {
         <>
           <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#141418] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="bg-[#141417] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">Generate Seats</h2>
                 <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
@@ -376,7 +376,7 @@ export default function TheatersPage() {
                   <input
                     value={seatForm.rows}
                     onChange={(e) => setSeatForm({ ...seatForm, rows: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                     placeholder="A,B,C,D,E,F,G,H"
                   />
                 </div>
@@ -386,17 +386,17 @@ export default function TheatersPage() {
                     type="number"
                     value={seatForm.seatsPerRow}
                     onChange={(e) => setSeatForm({ ...seatForm, seatsPerRow: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-amber-500/50"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A84C]/50"
                   />
                 </div>
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-3 text-xs text-amber-300">
+                <div className="bg-[#C9A84C]/10 border border-[#C9A84C]/20 rounded-xl p-3 text-xs text-[#D4B863]">
                   Will create {seatForm.rows.split(",").filter((r) => r.trim().length === 1).length} rows × {seatForm.seatsPerRow} seats = {seatForm.rows.split(",").filter((r) => r.trim().length === 1).length * parseInt(seatForm.seatsPerRow || "0")} seats with QR codes
                 </div>
               </div>
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setModal(null)} className="flex-1 border border-white/10 text-white/60 py-2.5 rounded-xl text-sm">Cancel</button>
                 <button onClick={generateBulkSeats} disabled={saving}
-                  className="flex-1 bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm">
+                  className="flex-1 bg-[#C9A84C] hover:bg-[#D4B863] disabled:opacity-50 text-black font-semibold py-2.5 rounded-xl text-sm">
                   {saving ? "Generating..." : "Generate"}
                 </button>
               </div>

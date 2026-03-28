@@ -21,17 +21,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user } = useUser();
 
   return (
-    <div className="min-h-screen bg-[#0f1117] text-white flex">
+    <div className="min-h-screen bg-[#0D0D0F] text-white flex">
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full w-56 bg-[#0a0d12] border-r border-white/[0.06] z-40 flex flex-col transition-transform duration-300
+      <aside className={`fixed top-0 left-0 h-full w-56 bg-[#0A0A0C] border-r border-white/[0.06] z-40 flex flex-col transition-transform duration-300
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         {/* Logo */}
         <div className="px-5 py-5 flex items-center gap-3 border-b border-white/[0.06]">
-          <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center font-black text-black text-sm">C</div>
+          <div className="w-8 h-8 bg-[#C9A84C] rounded-lg flex items-center justify-center font-black text-black text-sm">C</div>
           <div>
             <p className="font-bold text-sm">CineServe</p>
             <p className="text-[10px] text-white/40">Admin Panel</p>
@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             return (
               <Link key={item.href} href={item.href} onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all
-                  ${active ? "bg-amber-500/15 text-amber-400 font-medium" : "text-white/50 hover:text-white hover:bg-white/5"}`}>
+                  ${active ? "bg-[#C9A84C]/15 text-[#C9A84C] font-medium" : "text-white/50 hover:text-white hover:bg-white/5"}`}>
                 <span className="text-base w-5 text-center">{item.icon}</span>
                 {item.label}
                 {item.live && (
@@ -73,7 +73,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main */}
       <div className="flex-1 flex flex-col lg:ml-56">
-        <header className="sticky top-0 z-20 bg-[#0f1117]/95 backdrop-blur border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
+        <header className="sticky top-0 z-20 bg-[#0D0D0F]/95 backdrop-blur border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
           <button className="lg:hidden text-white/50 hover:text-white" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
           <div className="hidden lg:block">
             <p className="text-sm text-white/40">

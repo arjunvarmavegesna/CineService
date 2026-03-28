@@ -100,9 +100,9 @@ function OrderContent() {
   const rows = Array.from(new Set(seats.map((s) => s.row)));
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-white">
-      <header className="bg-[#141418] border-b border-white/10 px-4 py-4 flex items-center gap-3">
-        <div className="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center font-black text-black text-sm">C</div>
+    <div className="min-h-screen bg-[#0D0D0F] text-white">
+      <header className="bg-[#141417] border-b border-white/10 px-4 py-4 flex items-center gap-3">
+        <div className="w-8 h-8 bg-[#C9A84C] rounded-lg flex items-center justify-center font-black text-black text-sm">C</div>
         <span className="font-semibold text-lg">CineServe</span>
       </header>
 
@@ -117,7 +117,7 @@ function OrderContent() {
             <div key={s} className="flex items-center gap-2">
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border
                 ${done ? "bg-green-500 border-green-500 text-black" : ""}
-                ${active ? "border-amber-500 text-amber-500" : ""}
+                ${active ? "border-[#C9A84C] text-[#C9A84C]" : ""}
                 ${!done && !active ? "border-white/20 text-white/30" : ""}`}>
                 {done ? "✓" : i + 1}
               </div>
@@ -141,7 +141,7 @@ function OrderContent() {
             <div className="space-y-3">
               {theaters.map((t) => (
                 <button key={t.id} onClick={() => selectTheater(t)}
-                  className="w-full text-left p-4 bg-[#141418] border border-white/10 rounded-xl hover:border-amber-500/50 hover:bg-amber-500/5 transition-all">
+                  className="w-full text-left p-4 bg-[#141417] border border-white/10 rounded-xl hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/5 transition-all">
                   <div className="font-semibold">{t.name}</div>
                   <div className="text-sm text-white/50 mt-1">{t.city} · {t._count.screens} screens</div>
                 </button>
@@ -162,7 +162,7 @@ function OrderContent() {
             <div className="space-y-3">
               {screens.map((s) => (
                 <button key={s.id} onClick={() => selectScreen(s)}
-                  className="w-full text-left p-4 bg-[#141418] border border-white/10 rounded-xl hover:border-amber-500/50 hover:bg-amber-500/5 transition-all">
+                  className="w-full text-left p-4 bg-[#141417] border border-white/10 rounded-xl hover:border-[#C9A84C]/50 hover:bg-[#C9A84C]/5 transition-all">
                   <div className="font-semibold">{s.name}</div>
                   <div className="text-sm text-white/50 mt-1">{s.capacity} seats</div>
                 </button>
@@ -190,7 +190,7 @@ function OrderContent() {
                     {seats.filter((s) => s.row === row).map((s) => (
                       <button key={s.id} onClick={() => selectSeat(s)}
                         className={`w-7 h-6 rounded text-[10px] font-bold transition-all
-                          ${seat?.id === s.id ? "bg-amber-500 text-black" : "bg-white/10 hover:bg-amber-500 hover:text-black text-white/70 border border-white/10 hover:border-amber-500"}`}>
+                          ${seat?.id === s.id ? "bg-[#C9A84C] text-black" : "bg-white/10 hover:bg-[#C9A84C] hover:text-black text-white/70 border border-white/10 hover:border-[#C9A84C]"}`}>
                         {s.number}
                       </button>
                     ))}
@@ -201,7 +201,7 @@ function OrderContent() {
 
             <div className="flex gap-4 text-xs text-white/40">
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-white/10 border border-white/10" />Available</span>
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-amber-500" />Selected</span>
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#C9A84C]" />Selected</span>
             </div>
           </div>
         )}
@@ -212,7 +212,7 @@ function OrderContent() {
             <h2 className="text-xl font-bold mb-2">Confirm your seat</h2>
             <p className="text-white/50 text-sm mb-6">Is this correct? Your food will be delivered here.</p>
 
-            <div className="bg-[#141418] border border-amber-500/30 rounded-xl p-5 space-y-3 mb-6">
+            <div className="bg-[#141417] border border-[#C9A84C]/30 rounded-xl p-5 space-y-3 mb-6">
               <div className="flex justify-between text-sm">
                 <span className="text-white/50">Theater</span>
                 <span className="font-medium">{theater?.name}</span>
@@ -223,12 +223,12 @@ function OrderContent() {
               </div>
               <div className="flex justify-between text-sm items-center">
                 <span className="text-white/50">Your Seat</span>
-                <span className="text-3xl font-black text-amber-400">{seat.label}</span>
+                <span className="text-3xl font-black text-[#C9A84C]">{seat.label}</span>
               </div>
             </div>
 
             <button onClick={confirm}
-              className="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-4 rounded-xl transition-colors">
+              className="w-full bg-[#C9A84C] hover:bg-[#D4B863] text-black font-bold py-4 rounded-xl transition-colors">
               Yes, show me the menu 🍿
             </button>
             <button onClick={() => setStep("seat")}
@@ -244,7 +244,7 @@ function OrderContent() {
 
 export default function OrderPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center text-white/50">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0F] flex items-center justify-center text-white/50">Loading...</div>}>
       <OrderContent />
     </Suspense>
   );

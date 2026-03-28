@@ -83,12 +83,12 @@ export default function StaffPage() {
           placeholder="Search by name or email..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm placeholder-white/30 focus:outline-none focus:border-amber-500/50 w-64"
+          className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm placeholder-white/30 focus:outline-none focus:border-[#C9A84C]/50 w-64"
         />
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-500/50"
+          className="bg-white/5 border border-white/10 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#C9A84C]/50"
         >
           <option value="">All roles</option>
           {ROLES.map((r) => <option key={r} value={r}>{r.replace("_", " ")}</option>)}
@@ -103,7 +103,7 @@ export default function StaffPage() {
           {staffUsers.length > 0 && (
             <div>
               <h2 className="text-sm font-medium text-white/40 uppercase tracking-wide mb-3">Staff Members</h2>
-              <div className="bg-[#0a0d12] border border-white/[0.06] rounded-2xl overflow-hidden">
+              <div className="bg-[#141417] border border-white/[0.06] rounded-2xl overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/[0.06]">
@@ -143,7 +143,7 @@ export default function StaffPage() {
                             value={user.role}
                             onChange={(e) => updateRole(user.id, e.target.value)}
                             disabled={changingRole === user.id}
-                            className="bg-[#0a0d12] border border-white/10 rounded-lg px-2 py-1 text-xs focus:outline-none focus:border-amber-500/50 disabled:opacity-50"
+                            className="bg-[#141417] border border-white/10 rounded-lg px-2 py-1 text-xs focus:outline-none focus:border-[#C9A84C]/50 disabled:opacity-50"
                           >
                             {ROLES.filter((r) => r !== "CUSTOMER").map((r) => (
                               <option key={r} value={r}>{r.replace(/_/g, " ")}</option>
@@ -170,7 +170,7 @@ export default function StaffPage() {
           {customerUsers.length > 0 && (
             <div>
               <h2 className="text-sm font-medium text-white/40 uppercase tracking-wide mb-3">Customers ({customerUsers.length})</h2>
-              <div className="bg-[#0a0d12] border border-white/[0.06] rounded-2xl overflow-hidden">
+              <div className="bg-[#141417] border border-white/[0.06] rounded-2xl overflow-hidden">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-white/[0.06]">
@@ -194,7 +194,7 @@ export default function StaffPage() {
                         <td className="px-4 py-3">
                           <button
                             onClick={() => updateRole(user.id, "THEATER_ADMIN")}
-                            className="text-xs border border-white/10 hover:border-amber-500/50 px-2 py-1 rounded-lg text-white/50 hover:text-amber-400 transition-colors"
+                            className="text-xs border border-white/10 hover:border-[#C9A84C]/50 px-2 py-1 rounded-lg text-white/50 hover:text-[#C9A84C] transition-colors"
                           >
                             Make Staff
                           </button>

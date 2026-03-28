@@ -1,26 +1,86 @@
 @import "tailwindcss";
 
+/* ════════════════════════════════════════════════════
+   CINESERVE — Cinema Noir Design System v2.0
+   Premium dark theme for in-seat food ordering
+   ════════════════════════════════════════════════════
+
+   PALETTE STRATEGY
+   ─────────────────────────────────────────────────────
+   Background:   #0D0D0F  deep warm black (page)
+   Surface:      #141417  card / modal / drawer
+   Elevated:     #1C1C20  kanban columns / raised cards
+   Sidebar:      #0A0A0C  admin sidebar (deepest)
+   Gold accent:  #C9A84C  premium muted gold (primary)
+   Gold hover:   #D4B863  slightly brighter on hover
+   Red accent:   #E63946  cinematic / destructive
+   ════════════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Page Layers ── */
+  --cs-bg:          #0D0D0F;
+  --cs-surface:     #141417;
+  --cs-elevated:    #1C1C20;
+  --cs-sidebar:     #0A0A0C;
+
+  /* ── Gold Accent ── */
+  --cs-gold:        #C9A84C;
+  --cs-gold-hover:  #D4B863;
+  --cs-gold-10:     rgba(201, 168, 76, 0.10);
+  --cs-gold-15:     rgba(201, 168, 76, 0.15);
+  --cs-gold-20:     rgba(201, 168, 76, 0.20);
+  --cs-gold-30:     rgba(201, 168, 76, 0.30);
+  --cs-gold-50:     rgba(201, 168, 76, 0.50);
+
+  /* ── Red Accent ── */
+  --cs-red:         #E63946;
+  --cs-red-10:      rgba(230, 57, 70, 0.10);
+  --cs-red-20:      rgba(230, 57, 70, 0.20);
+
+  /* ── Text ── */
+  --cs-text:        #F0F0F2;
+  --cs-text-sub:    rgba(255, 255, 255, 0.50);
+  --cs-text-muted:  rgba(255, 255, 255, 0.30);
+
+  /* ── Borders ── */
+  --cs-border:      #27272B;
+  --cs-border-sub:  rgba(255, 255, 255, 0.06);
+
+  /* ── Inputs ── */
+  --cs-input:       rgba(255, 255, 255, 0.05);
+  --cs-input-b:     rgba(255, 255, 255, 0.10);
+  --cs-focus:       rgba(201, 168, 76, 0.50);
+
+  /* ── Semantic ── */
+  --cs-success: #22C55E;
+  --cs-warning: #EAB308;
+  --cs-error:   #EF4444;
+  --cs-info:    #3B82F6;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--cs-bg);
+  --color-foreground: var(--cs-text);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--cs-bg);
+  color: var(--cs-text);
+  font-family: var(--font-geist-sans, system-ui, -apple-system, sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2A2A2E; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #363639; }
+
+/* ── Select options in dark theme ── */
+select option {
+  background-color: #141417;
+  color: #F0F0F2;
 }

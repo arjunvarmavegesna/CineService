@@ -14,7 +14,7 @@ interface ReportData {
 const STATUS_COLORS: Record<string, string> = {
   PENDING: "bg-blue-500/15 text-blue-400",
   CONFIRMED: "bg-cyan-500/15 text-cyan-400",
-  PREPARING: "bg-amber-500/15 text-amber-400",
+  PREPARING: "bg-[#C9A84C]/15 text-[#C9A84C]",
   READY: "bg-yellow-500/15 text-yellow-400",
   OUT_FOR_DELIVERY: "bg-purple-500/15 text-purple-400",
   DELIVERED: "bg-green-500/15 text-green-400",
@@ -49,7 +49,7 @@ export default function AdminDashboard() {
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-[#1a1e2a] border border-white/10 rounded-2xl p-5 animate-pulse">
+            <div key={i} className="bg-[#1C1C20] border border-white/10 rounded-2xl p-5 animate-pulse">
               <div className="h-3 bg-white/10 rounded mb-3 w-24" />
               <div className="h-8 bg-white/10 rounded mb-2 w-16" />
               <div className="h-3 bg-white/5 rounded w-20" />
@@ -60,11 +60,11 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { label: "Today's Orders", value: (data?.totalOrders ?? 0).toString(), sub: "Last 24 hours", color: "text-blue-400" },
-            { label: "Active Orders", value: activeCount.toString(), sub: "In progress now", color: "text-amber-400" },
+            { label: "Active Orders", value: activeCount.toString(), sub: "In progress now", color: "text-[#C9A84C]" },
             { label: "Today's Revenue", value: formatCurrency(data?.totalRevenue ?? 0), sub: "Excl. cancelled", color: "text-green-400" },
             { label: "Avg Order Value", value: formatCurrency(avgValue), sub: "Per order today", color: "text-purple-400" },
           ].map((m) => (
-            <div key={m.label} className="bg-[#1a1e2a] border border-white/10 rounded-2xl p-5">
+            <div key={m.label} className="bg-[#1C1C20] border border-white/10 rounded-2xl p-5">
               <p className="text-xs text-white/40 mb-2 uppercase tracking-wide">{m.label}</p>
               <p className={`text-2xl font-black ${m.color}`}>{m.value}</p>
               <p className="text-xs text-white/40 mt-1">{m.sub}</p>
@@ -76,13 +76,13 @@ export default function AdminDashboard() {
       {/* Quick actions */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
-          { label: "Live Orders", href: "/admin/orders", icon: "⚡", color: "border-amber-500/30 hover:border-amber-500/60" },
+          { label: "Live Orders", href: "/admin/orders", icon: "⚡", color: "border-[#C9A84C]/30 hover:border-[#C9A84C]/60" },
           { label: "Manage Menu", href: "/admin/menu", icon: "🍽", color: "border-white/10 hover:border-white/20" },
           { label: "Theaters & QR", href: "/admin/theaters", icon: "🏛", color: "border-white/10 hover:border-white/20" },
           { label: "View Reports", href: "/admin/reports", icon: "📊", color: "border-white/10 hover:border-white/20" },
         ].map((a) => (
           <Link key={a.href} href={a.href}
-            className={`bg-[#1a1e2a] border ${a.color} rounded-xl p-4 flex items-center gap-3 transition-all hover:bg-white/5`}>
+            className={`bg-[#1C1C20] border ${a.color} rounded-xl p-4 flex items-center gap-3 transition-all hover:bg-white/5`}>
             <span className="text-2xl">{a.icon}</span>
             <span className="text-sm font-medium">{a.label}</span>
           </Link>
@@ -90,10 +90,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent orders */}
-      <div className="bg-[#1a1e2a] border border-white/10 rounded-2xl overflow-hidden">
+      <div className="bg-[#1C1C20] border border-white/10 rounded-2xl overflow-hidden">
         <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
           <h2 className="font-semibold">Recent Orders</h2>
-          <Link href="/admin/orders" className="text-sm text-amber-400 hover:underline">View live board →</Link>
+          <Link href="/admin/orders" className="text-sm text-[#C9A84C] hover:underline">View live board →</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
             <tbody className="divide-y divide-white/[0.05]">
               {(data?.recentOrders ?? []).map((order) => (
                 <tr key={order.orderNumber} className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-3.5 font-mono text-amber-400 text-xs font-bold">{order.orderNumber}</td>
+                  <td className="px-6 py-3.5 font-mono text-[#C9A84C] text-xs font-bold">{order.orderNumber}</td>
                   <td className="px-6 py-3.5 text-white/60 text-xs">{order.theater.name}</td>
                   <td className="px-6 py-3.5 font-black text-lg">{order.seatLabel}</td>
                   <td className="px-6 py-3.5 font-semibold">{formatCurrency(order.totalAmount)}</td>
