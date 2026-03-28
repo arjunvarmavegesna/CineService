@@ -100,8 +100,8 @@ function OrderContent() {
   const rows = Array.from(new Set(seats.map((s) => s.row)));
 
   return (
-    <div className="min-h-screen bg-[#14142A] text-white">
-      <header className="bg-[#1C1C36] border-b border-white/10 px-4 py-4 flex items-center gap-3">
+    <div className="min-h-screen bg-[#F4F4F9] text-gray-900">
+      <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center gap-3">
         <div className="w-8 h-8 bg-[#E03455] rounded-lg flex items-center justify-center font-black text-white text-sm">C</div>
         <span className="font-semibold text-lg">CineServe</span>
       </header>
@@ -118,11 +118,11 @@ function OrderContent() {
               <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border
                 ${done ? "bg-green-500 border-green-500 text-white" : ""}
                 ${active ? "border-[#E03455] text-[#E03455]" : ""}
-                ${!done && !active ? "border-white/20 text-white/30" : ""}`}>
+                ${!done && !active ? "border-gray-300 text-gray-400" : ""}`}>
                 {done ? "✓" : i + 1}
               </div>
-              <span className={`text-sm ${active ? "text-white" : "text-white/40"}`}>{s}</span>
-              {i < 2 && <div className="w-8 h-px bg-white/10 ml-1" />}
+              <span className={`text-sm ${active ? "text-gray-900" : "text-gray-400"}`}>{s}</span>
+              {i < 2 && <div className="w-8 h-px bg-gray-100 ml-1" />}
             </div>
           );
         })}
@@ -130,24 +130,24 @@ function OrderContent() {
 
       <div className="max-w-lg mx-auto px-4 py-4">
         {loading && (
-          <div className="text-center py-12 text-white/40">Loading...</div>
+          <div className="text-center py-12 text-gray-400">Loading...</div>
         )}
 
         {/* Theater Selection */}
         {!loading && step === "theater" && (
           <div>
             <h2 className="text-xl font-bold mb-2">Select your theater</h2>
-            <p className="text-white/50 text-sm mb-6">Which theater are you currently in?</p>
+            <p className="text-gray-500 text-sm mb-6">Which theater are you currently in?</p>
             <div className="space-y-3">
               {theaters.map((t) => (
                 <button key={t.id} onClick={() => selectTheater(t)}
-                  className="w-full text-left p-4 bg-[#1C1C36] border border-white/10 rounded-xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
+                  className="w-full text-left p-4 bg-white border border-gray-200 rounded-xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
                   <div className="font-semibold">{t.name}</div>
-                  <div className="text-sm text-white/50 mt-1">{t.city} · {t._count.screens} screens</div>
+                  <div className="text-sm text-gray-500 mt-1">{t.city} · {t._count.screens} screens</div>
                 </button>
               ))}
               {theaters.length === 0 && (
-                <div className="text-center py-10 text-white/30">No theaters available</div>
+                <div className="text-center py-10 text-gray-400">No theaters available</div>
               )}
             </div>
           </div>
@@ -156,15 +156,15 @@ function OrderContent() {
         {/* Screen Selection */}
         {!loading && step === "screen" && (
           <div>
-            <button onClick={() => setStep("theater")} className="text-white/50 text-sm mb-4 hover:text-white">← Back</button>
+            <button onClick={() => setStep("theater")} className="text-gray-500 text-sm mb-4 hover:text-gray-900">← Back</button>
             <h2 className="text-xl font-bold mb-2">Select your screen</h2>
-            <p className="text-white/50 text-sm mb-6">Inside {theater?.name}</p>
+            <p className="text-gray-500 text-sm mb-6">Inside {theater?.name}</p>
             <div className="space-y-3">
               {screens.map((s) => (
                 <button key={s.id} onClick={() => selectScreen(s)}
-                  className="w-full text-left p-4 bg-[#1C1C36] border border-white/10 rounded-xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
+                  className="w-full text-left p-4 bg-white border border-gray-200 rounded-xl hover:border-[#E03455]/50 hover:bg-[#E03455]/5 transition-all">
                   <div className="font-semibold">{s.name}</div>
-                  <div className="text-sm text-white/50 mt-1">{s.capacity} seats</div>
+                  <div className="text-sm text-gray-500 mt-1">{s.capacity} seats</div>
                 </button>
               ))}
             </div>
@@ -174,23 +174,23 @@ function OrderContent() {
         {/* Seat Selection */}
         {!loading && step === "seat" && (
           <div>
-            <button onClick={() => setStep("screen")} className="text-white/50 text-sm mb-4 hover:text-white">← Back</button>
+            <button onClick={() => setStep("screen")} className="text-gray-500 text-sm mb-4 hover:text-gray-900">← Back</button>
             <h2 className="text-xl font-bold mb-2">Select your seat</h2>
-            <p className="text-white/50 text-sm mb-4">Tap your exact seat number</p>
+            <p className="text-gray-500 text-sm mb-4">Tap your exact seat number</p>
 
-            <div className="text-center text-xs text-white/30 tracking-widest mb-4 py-2 bg-white/5 rounded-lg">
+            <div className="text-center text-xs text-gray-400 tracking-widest mb-4 py-2 bg-gray-50 rounded-lg">
               SCREEN THIS WAY ▲
             </div>
 
             <div className="space-y-2 mb-6 overflow-x-auto">
               {rows.map((row) => (
                 <div key={row} className="flex items-center gap-2">
-                  <span className="text-xs text-white/30 w-4 flex-shrink-0">{row}</span>
+                  <span className="text-xs text-gray-400 w-4 flex-shrink-0">{row}</span>
                   <div className="flex gap-1.5">
                     {seats.filter((s) => s.row === row).map((s) => (
                       <button key={s.id} onClick={() => selectSeat(s)}
                         className={`w-7 h-6 rounded text-[10px] font-bold transition-all
-                          ${seat?.id === s.id ? "bg-[#E03455] text-white" : "bg-white/10 hover:bg-[#E03455] hover:text-white text-white/70 border border-white/10 hover:border-[#E03455]"}`}>
+                          ${seat?.id === s.id ? "bg-[#E03455] text-white" : "bg-gray-100 hover:bg-[#E03455] hover:text-white text-gray-600 border border-gray-200 hover:border-[#E03455]"}`}>
                         {s.number}
                       </button>
                     ))}
@@ -199,8 +199,8 @@ function OrderContent() {
               ))}
             </div>
 
-            <div className="flex gap-4 text-xs text-white/40">
-              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-white/10 border border-white/10" />Available</span>
+            <div className="flex gap-4 text-xs text-gray-400">
+              <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-gray-100 border border-gray-200" />Available</span>
               <span className="flex items-center gap-1.5"><span className="w-3 h-3 rounded bg-[#E03455]" />Selected</span>
             </div>
           </div>
@@ -210,29 +210,29 @@ function OrderContent() {
         {step === "confirm" && seat && (
           <div>
             <h2 className="text-xl font-bold mb-2">Confirm your seat</h2>
-            <p className="text-white/50 text-sm mb-6">Is this correct? Your food will be delivered here.</p>
+            <p className="text-gray-500 text-sm mb-6">Is this correct? Your food will be delivered here.</p>
 
-            <div className="bg-[#1C1C36] border border-[#E03455]/30 rounded-xl p-5 space-y-3 mb-6">
+            <div className="bg-white border border-[#E03455]/30 rounded-xl p-5 space-y-3 mb-6">
               <div className="flex justify-between text-sm">
-                <span className="text-white/50">Theater</span>
+                <span className="text-gray-500">Theater</span>
                 <span className="font-medium">{theater?.name}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-white/50">Screen</span>
+                <span className="text-gray-500">Screen</span>
                 <span className="font-medium">{screen?.name}</span>
               </div>
               <div className="flex justify-between text-sm items-center">
-                <span className="text-white/50">Your Seat</span>
+                <span className="text-gray-500">Your Seat</span>
                 <span className="text-3xl font-black text-[#E03455]">{seat.label}</span>
               </div>
             </div>
 
             <button onClick={confirm}
-              className="w-full bg-[#E03455] hover:bg-[#FF4060] text-white font-bold py-4 rounded-xl transition-colors">
+              className="w-full bg-[#E03455] hover:bg-[#C82040] text-white font-bold py-4 rounded-xl transition-colors">
               Yes, show me the menu 🍿
             </button>
             <button onClick={() => setStep("seat")}
-              className="w-full mt-3 text-white/50 hover:text-white text-sm py-2">
+              className="w-full mt-3 text-gray-500 hover:text-gray-900 text-sm py-2">
               Change seat
             </button>
           </div>
@@ -244,7 +244,7 @@ function OrderContent() {
 
 export default function OrderPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#14142A] flex items-center justify-center text-white/50">Loading...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F4F4F9] flex items-center justify-center text-gray-500">Loading...</div>}>
       <OrderContent />
     </Suspense>
   );

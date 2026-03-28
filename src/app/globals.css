@@ -1,31 +1,31 @@
 @import "tailwindcss";
 
 /* ════════════════════════════════════════════════════
-   CINESERVE — BookMyShow-Inspired Cinema Dark v3.0
-   Deep navy backgrounds + vivid red primary accent
+   CINESERVE — Light Theme v4.0
+   Clean white + vivid red accent (BMS light style)
    ════════════════════════════════════════════════════
 
    PALETTE
    ─────────────────────────────────────────────────────
-   Background:   #14142A  deep dark navy (page)
-   Surface:      #1C1C36  card / modal / drawer
-   Elevated:     #24244A  kanban columns / raised cards
-   Sidebar:      #0E0E1E  admin sidebar (deepest)
+   Background:   #F4F4F9  light lavender-white (page)
+   Surface:      #FFFFFF  card / modal (white)
+   Elevated:     #F0F0F8  secondary cards / raised
+   Sidebar:      #0E0E1E  admin sidebar (stays dark)
    Red accent:   #E03455  BMS primary (buttons, CTAs)
-   Red hover:    #FF4060  brighter on hover
-   Border:       rgba(255,255,255,0.08)
+   Red hover:    #C82040  darker on hover (light bg)
+   Border:       #E2E2EE  subtle lavender border
    ════════════════════════════════════════════════════ */
 
 :root {
   /* ── Page Layers ── */
-  --cs-bg:          #14142A;
-  --cs-surface:     #1C1C36;
-  --cs-elevated:    #24244A;
+  --cs-bg:          #F4F4F9;
+  --cs-surface:     #FFFFFF;
+  --cs-elevated:    #F0F0F8;
   --cs-sidebar:     #0E0E1E;
 
   /* ── Red Accent (BMS primary) ── */
   --cs-red:         #E03455;
-  --cs-red-hover:   #FF4060;
+  --cs-red-hover:   #C82040;
   --cs-red-10:      rgba(224, 52, 85, 0.10);
   --cs-red-15:      rgba(224, 52, 85, 0.15);
   --cs-red-20:      rgba(224, 52, 85, 0.20);
@@ -33,18 +33,18 @@
   --cs-red-50:      rgba(224, 52, 85, 0.50);
 
   /* ── Text ── */
-  --cs-text:        #F0F0F5;
-  --cs-text-sub:    rgba(255, 255, 255, 0.55);
-  --cs-text-muted:  rgba(255, 255, 255, 0.30);
+  --cs-text:        #1A1A2E;
+  --cs-text-sub:    #666680;
+  --cs-text-muted:  #9999B0;
 
   /* ── Borders ── */
-  --cs-border:      rgba(255, 255, 255, 0.08);
-  --cs-border-sub:  rgba(255, 255, 255, 0.05);
+  --cs-border:      #E2E2EE;
+  --cs-border-sub:  #ECECF4;
 
   /* ── Inputs ── */
-  --cs-input:       rgba(255, 255, 255, 0.05);
-  --cs-input-b:     rgba(255, 255, 255, 0.10);
-  --cs-focus:       rgba(224, 52, 85, 0.50);
+  --cs-input:       #F0F0F8;
+  --cs-input-b:     #E2E2EE;
+  --cs-focus:       rgba(224, 52, 85, 0.30);
 
   /* ── Semantic ── */
   --cs-success: #22C55E;
@@ -71,11 +71,5 @@ body {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.20); }
-
-/* ── Select options in dark theme ── */
-select option {
-  background-color: #1C1C36;
-  color: #F0F0F5;
-}
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.25); }

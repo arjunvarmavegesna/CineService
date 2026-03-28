@@ -129,24 +129,24 @@ export default function TheatersPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold">Theaters & Seats</h1>
-          <p className="text-sm text-white/40 mt-0.5">Manage theaters, screens, seats, and QR codes</p>
+          <p className="text-sm text-gray-400 mt-0.5">Manage theaters, screens, seats, and QR codes</p>
         </div>
         {tab === "theaters" && (
-          <button onClick={() => setModal("add-theater")} className="bg-[#E03455] hover:bg-[#FF4060] text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+          <button onClick={() => setModal("add-theater")} className="bg-[#E03455] hover:bg-[#C82040] text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
             + Add Theater
           </button>
         )}
         {tab === "screens" && selectedTheater && (
-          <button onClick={() => setModal("add-screen")} className="bg-[#E03455] hover:bg-[#FF4060] text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+          <button onClick={() => setModal("add-screen")} className="bg-[#E03455] hover:bg-[#C82040] text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
             + Add Screen
           </button>
         )}
         {tab === "seats" && selectedScreen && (
           <div className="flex gap-2">
-            <button onClick={downloadAllQRs} className="border border-white/10 hover:border-[#E03455]/50 text-white/60 hover:text-[#E03455] px-3 py-2 rounded-xl text-sm transition-colors">
+            <button onClick={downloadAllQRs} className="border border-gray-200 hover:border-[#E03455]/50 text-gray-500 hover:text-[#E03455] px-3 py-2 rounded-xl text-sm transition-colors">
               ↓ Download All QRs
             </button>
-            <button onClick={() => setModal("bulk-seats")} className="bg-[#E03455] hover:bg-[#FF4060] text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
+            <button onClick={() => setModal("bulk-seats")} className="bg-[#E03455] hover:bg-[#C82040] text-white font-semibold px-4 py-2 rounded-xl text-sm transition-colors">
               + Generate Seats
             </button>
           </div>
@@ -156,28 +156,28 @@ export default function TheatersPage() {
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm mb-5">
         <button onClick={() => { setTab("theaters"); setSelectedTheater(null); setSelectedScreen(null); }}
-          className={`transition-colors ${tab === "theaters" ? "text-white font-medium" : "text-white/40 hover:text-white"}`}>
+          className={`transition-colors ${tab === "theaters" ? "text-gray-900 font-medium" : "text-gray-400 hover:text-gray-900"}`}>
           Theaters
         </button>
         {selectedTheater && (
           <>
-            <span className="text-white/20">/</span>
+            <span className="text-gray-300">/</span>
             <button onClick={() => { setTab("screens"); setSelectedScreen(null); loadScreens(selectedTheater.id); }}
-              className={`transition-colors ${tab === "screens" ? "text-white font-medium" : "text-white/40 hover:text-white"}`}>
+              className={`transition-colors ${tab === "screens" ? "text-gray-900 font-medium" : "text-gray-400 hover:text-gray-900"}`}>
               {selectedTheater.name}
             </button>
           </>
         )}
         {selectedScreen && (
           <>
-            <span className="text-white/20">/</span>
-            <span className="text-white font-medium">{selectedScreen.name}</span>
+            <span className="text-gray-300">/</span>
+            <span className="text-gray-900 font-medium">{selectedScreen.name}</span>
           </>
         )}
       </div>
 
       {loading ? (
-        <div className="text-white/40 text-center py-16">Loading...</div>
+        <div className="text-gray-400 text-center py-16">Loading...</div>
       ) : (
         <>
           {/* Theaters List */}
@@ -185,34 +185,34 @@ export default function TheatersPage() {
             <div className="grid gap-3">
               {theaters.map((t) => (
                 <button key={t.id} onClick={() => selectTheater(t)}
-                  className="w-full text-left bg-[#1C1C36] border border-white/[0.06] hover:border-[#E03455]/30 rounded-2xl p-5 transition-all group">
+                  className="w-full text-left bg-white border border-gray-100 hover:border-[#E03455]/30 rounded-2xl p-5 transition-all group">
                   <div className="flex items-center justify-between">
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="font-semibold">{t.name}</h3>
                         {!t.isActive && <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">Inactive</span>}
                       </div>
-                      <p className="text-sm text-white/50">{t.city}, {t.state}</p>
-                      <p className="text-xs text-white/30 mt-1">{t.address}</p>
+                      <p className="text-sm text-gray-500">{t.city}, {t.state}</p>
+                      <p className="text-xs text-gray-400 mt-1">{t.address}</p>
                     </div>
                     <div className="text-right">
                       <div className="flex gap-4 text-sm mb-2">
                         <div className="text-center">
                           <p className="font-bold text-[#E03455]">{t._count.screens}</p>
-                          <p className="text-white/40 text-xs">Screens</p>
+                          <p className="text-gray-400 text-xs">Screens</p>
                         </div>
                         <div className="text-center">
                           <p className="font-bold">{t._count.orders}</p>
-                          <p className="text-white/40 text-xs">Orders</p>
+                          <p className="text-gray-400 text-xs">Orders</p>
                         </div>
                       </div>
-                      <span className="text-xs text-[#E03455] group-hover:text-[#FF4060]">Manage →</span>
+                      <span className="text-xs text-[#E03455] group-hover:text-[#C82040]">Manage →</span>
                     </div>
                   </div>
                 </button>
               ))}
               {theaters.length === 0 && (
-                <div className="text-center py-16 text-white/30">No theaters yet. Add one to get started.</div>
+                <div className="text-center py-16 text-gray-400">No theaters yet. Add one to get started.</div>
               )}
             </div>
           )}
@@ -222,22 +222,22 @@ export default function TheatersPage() {
             <div className="grid gap-3">
               {screens.map((s) => (
                 <button key={s.id} onClick={() => selectScreen(s)}
-                  className="w-full text-left bg-[#1C1C36] border border-white/[0.06] hover:border-[#E03455]/30 rounded-2xl p-5 transition-all group">
+                  className="w-full text-left bg-white border border-gray-100 hover:border-[#E03455]/30 rounded-2xl p-5 transition-all group">
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="font-semibold mb-1">{s.name}</h3>
-                      <p className="text-sm text-white/50">Screen #{s.number} · {s.capacity} seats</p>
+                      <p className="text-sm text-gray-500">Screen #{s.number} · {s.capacity} seats</p>
                     </div>
                     <div className="text-right">
                       <p className="font-bold text-[#E03455]">{s._count.seats}</p>
-                      <p className="text-white/40 text-xs">Seats configured</p>
-                      <span className="text-xs text-[#E03455] group-hover:text-[#FF4060] block mt-1">Manage seats →</span>
+                      <p className="text-gray-400 text-xs">Seats configured</p>
+                      <span className="text-xs text-[#E03455] group-hover:text-[#C82040] block mt-1">Manage seats →</span>
                     </div>
                   </div>
                 </button>
               ))}
               {screens.length === 0 && (
-                <div className="text-center py-16 text-white/30">No screens yet.</div>
+                <div className="text-center py-16 text-gray-400">No screens yet.</div>
               )}
             </div>
           )}
@@ -245,19 +245,19 @@ export default function TheatersPage() {
           {/* Seats Grid */}
           {tab === "seats" && (
             <div>
-              <div className="text-center text-xs text-white/30 tracking-widest py-2 bg-white/5 rounded-lg mb-4">
+              <div className="text-center text-xs text-gray-400 tracking-widest py-2 bg-gray-50 rounded-lg mb-4">
                 SCREEN ▲
               </div>
               {/* Group seats by row */}
               {Array.from(new Set(seats.map((s) => s.row))).map((row) => (
                 <div key={row} className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-white/30 w-4">{row}</span>
+                  <span className="text-xs text-gray-400 w-4">{row}</span>
                   <div className="flex gap-1.5 flex-wrap">
                     {seats.filter((s) => s.row === row).map((seat) => (
                       <div key={seat.id} className="relative group">
                         <button
                           onClick={() => downloadQR(seat.id, seat.label)}
-                          className="w-8 h-7 rounded bg-white/10 hover:bg-[#E03455] hover:text-white text-white/60 text-[10px] font-bold transition-all"
+                          className="w-8 h-7 rounded bg-gray-100 hover:bg-[#E03455] hover:text-white text-gray-500 text-[10px] font-bold transition-all"
                           title={`Download QR for ${seat.label}`}
                         >
                           {seat.number}
@@ -268,10 +268,10 @@ export default function TheatersPage() {
                 </div>
               ))}
               {seats.length === 0 && (
-                <div className="text-center py-16 text-white/30">No seats yet. Generate seats to get started.</div>
+                <div className="text-center py-16 text-gray-400">No seats yet. Generate seats to get started.</div>
               )}
               {seats.length > 0 && (
-                <p className="text-xs text-white/30 mt-4 text-center">Click any seat to download its QR code</p>
+                <p className="text-xs text-gray-400 mt-4 text-center">Click any seat to download its QR code</p>
               )}
             </div>
           )}
@@ -281,12 +281,12 @@ export default function TheatersPage() {
       {/* Add Theater Modal */}
       {modal === "add-theater" && (
         <>
-          <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
+          <div className="fixed inset-0 bg-gray-900/50 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-6 w-full max-w-md">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-md">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">Add Theater</h2>
-                <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
+                <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-900 text-xl">✕</button>
               </div>
               <div className="space-y-3">
                 {[
@@ -297,20 +297,20 @@ export default function TheatersPage() {
                   { label: "Phone", key: "phone", placeholder: "+91 ..." },
                 ].map(({ label, key, placeholder }) => (
                   <div key={key}>
-                    <label className="text-xs text-white/50 block mb-1">{label}</label>
+                    <label className="text-xs text-gray-500 block mb-1">{label}</label>
                     <input
                       value={theaterForm[key as keyof typeof theaterForm]}
                       onChange={(e) => setTheaterForm({ ...theaterForm, [key]: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                       placeholder={placeholder}
                     />
                   </div>
                 ))}
               </div>
               <div className="flex gap-3 mt-5">
-                <button onClick={() => setModal(null)} className="flex-1 border border-white/10 text-white/60 hover:text-white py-2.5 rounded-xl text-sm">Cancel</button>
+                <button onClick={() => setModal(null)} className="flex-1 border border-gray-200 text-gray-500 hover:text-gray-900 py-2.5 rounded-xl text-sm">Cancel</button>
                 <button onClick={addTheater} disabled={saving || !theaterForm.name || !theaterForm.city}
-                  className="flex-1 bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm">
+                  className="flex-1 bg-[#E03455] hover:bg-[#C82040] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm">
                   {saving ? "Adding..." : "Add Theater"}
                 </button>
               </div>
@@ -322,12 +322,12 @@ export default function TheatersPage() {
       {/* Add Screen Modal */}
       {modal === "add-screen" && (
         <>
-          <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
+          <div className="fixed inset-0 bg-gray-900/50 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">Add Screen</h2>
-                <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
+                <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-900 text-xl">✕</button>
               </div>
               <div className="space-y-3">
                 {[
@@ -336,21 +336,21 @@ export default function TheatersPage() {
                   { label: "Capacity *", key: "capacity", placeholder: "120", type: "number" },
                 ].map(({ label, key, placeholder, type }) => (
                   <div key={key}>
-                    <label className="text-xs text-white/50 block mb-1">{label}</label>
+                    <label className="text-xs text-gray-500 block mb-1">{label}</label>
                     <input
                       type={type ?? "text"}
                       value={screenForm[key as keyof typeof screenForm]}
                       onChange={(e) => setScreenForm({ ...screenForm, [key]: e.target.value })}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                       placeholder={placeholder}
                     />
                   </div>
                 ))}
               </div>
               <div className="flex gap-3 mt-5">
-                <button onClick={() => setModal(null)} className="flex-1 border border-white/10 text-white/60 py-2.5 rounded-xl text-sm">Cancel</button>
+                <button onClick={() => setModal(null)} className="flex-1 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm">Cancel</button>
                 <button onClick={addScreen} disabled={saving || !screenForm.name || !screenForm.number}
-                  className="flex-1 bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm">
+                  className="flex-1 bg-[#E03455] hover:bg-[#C82040] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm">
                   {saving ? "Adding..." : "Add Screen"}
                 </button>
               </div>
@@ -362,41 +362,41 @@ export default function TheatersPage() {
       {/* Bulk Seats Modal */}
       {modal === "bulk-seats" && (
         <>
-          <div className="fixed inset-0 bg-black/60 z-40" onClick={() => setModal(null)} />
+          <div className="fixed inset-0 bg-gray-900/50 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-[#1C1C36] border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-bold text-lg">Generate Seats</h2>
-                <button onClick={() => setModal(null)} className="text-white/40 hover:text-white text-xl">✕</button>
+                <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-900 text-xl">✕</button>
               </div>
-              <p className="text-sm text-white/50 mb-4">This will create seats and QR codes for <strong className="text-white">{selectedScreen?.name}</strong>.</p>
+              <p className="text-sm text-gray-500 mb-4">This will create seats and QR codes for <strong className="text-gray-900">{selectedScreen?.name}</strong>.</p>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-white/50 block mb-1">Rows (comma separated)</label>
+                  <label className="text-xs text-gray-500 block mb-1">Rows (comma separated)</label>
                   <input
                     value={seatForm.rows}
                     onChange={(e) => setSeatForm({ ...seatForm, rows: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                     placeholder="A,B,C,D,E,F,G,H"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/50 block mb-1">Seats per Row</label>
+                  <label className="text-xs text-gray-500 block mb-1">Seats per Row</label>
                   <input
                     type="number"
                     value={seatForm.seatsPerRow}
                     onChange={(e) => setSeatForm({ ...seatForm, seatsPerRow: e.target.value })}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                   />
                 </div>
-                <div className="bg-[#E03455]/10 border border-[#E03455]/20 rounded-xl p-3 text-xs text-[#FF4060]">
+                <div className="bg-[#E03455]/10 border border-[#E03455]/20 rounded-xl p-3 text-xs text-[#C82040]">
                   Will create {seatForm.rows.split(",").filter((r) => r.trim().length === 1).length} rows × {seatForm.seatsPerRow} seats = {seatForm.rows.split(",").filter((r) => r.trim().length === 1).length * parseInt(seatForm.seatsPerRow || "0")} seats with QR codes
                 </div>
               </div>
               <div className="flex gap-3 mt-5">
-                <button onClick={() => setModal(null)} className="flex-1 border border-white/10 text-white/60 py-2.5 rounded-xl text-sm">Cancel</button>
+                <button onClick={() => setModal(null)} className="flex-1 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm">Cancel</button>
                 <button onClick={generateBulkSeats} disabled={saving}
-                  className="flex-1 bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm">
+                  className="flex-1 bg-[#E03455] hover:bg-[#C82040] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm">
                   {saving ? "Generating..." : "Generate"}
                 </button>
               </div>

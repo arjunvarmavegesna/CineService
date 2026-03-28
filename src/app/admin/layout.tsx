@@ -21,13 +21,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const { user } = useUser();
 
   return (
-    <div className="min-h-screen bg-[#14142A] text-white flex">
+    <div className="min-h-screen bg-[#F4F4F9] text-gray-900 flex">
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-gray-900/40 z-30 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
-      {/* Sidebar */}
-      <aside className={`fixed top-0 left-0 h-full w-56 bg-[#0E0E1E] border-r border-white/[0.06] z-40 flex flex-col transition-transform duration-300
+      {/* Sidebar — stays dark */}
+      <aside className={`fixed top-0 left-0 h-full w-56 bg-[#0E0E1E] border-r border-white/[0.06] z-40 flex flex-col transition-transform duration-300 text-white
         ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
         {/* Logo */}
         <div className="px-5 py-5 flex items-center gap-3 border-b border-white/[0.06]">
@@ -71,17 +71,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Main */}
+      {/* Main content area — light */}
       <div className="flex-1 flex flex-col lg:ml-56">
-        <header className="sticky top-0 z-20 bg-[#14142A]/95 backdrop-blur border-b border-white/[0.06] px-6 py-4 flex items-center justify-between">
-          <button className="lg:hidden text-white/50 hover:text-white" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
+        <header className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+          <button className="lg:hidden text-gray-500 hover:text-gray-900" onClick={() => setSidebarOpen(!sidebarOpen)}>☰</button>
           <div className="hidden lg:block">
-            <p className="text-sm text-white/40">
+            <p className="text-sm text-gray-400">
               {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-xs text-white/40 hover:text-white border border-white/10 rounded-lg px-3 py-1.5 transition-colors">
+            <Link href="/" className="text-xs text-gray-400 hover:text-gray-900 border border-gray-200 rounded-lg px-3 py-1.5 transition-colors">
               View customer site →
             </Link>
           </div>

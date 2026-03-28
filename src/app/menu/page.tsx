@@ -69,19 +69,19 @@ function MenuContent() {
   const displaySeatLabel = seatLabel || seat?.seatLabel || "—";
 
   return (
-    <div className="min-h-screen bg-[#14142A] text-white flex flex-col">
+    <div className="min-h-screen bg-[#F4F4F9] text-gray-900 flex flex-col">
       {/* Sticky header */}
-      <header className="sticky top-0 z-30 bg-[#14142A]/95 backdrop-blur border-b border-white/10">
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-gray-200">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 bg-[#E03455] rounded-lg flex items-center justify-center font-black text-white text-xs">C</div>
             <div>
-              <p className="text-xs text-white/50">Delivering to</p>
+              <p className="text-xs text-gray-500">Delivering to</p>
               <p className="text-sm font-bold">Seat <span className="text-[#E03455]">{displaySeatLabel}</span></p>
             </div>
           </div>
           <button onClick={() => router.push("/order")}
-            className="text-xs text-white/40 border border-white/10 rounded-lg px-2 py-1 hover:text-white transition-colors">
+            className="text-xs text-gray-400 border border-gray-200 rounded-lg px-2 py-1 hover:text-gray-900 transition-colors">
             Change seat
           </button>
         </div>
@@ -92,7 +92,7 @@ function MenuContent() {
             placeholder="Search food and drinks..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm placeholder-white/30 focus:outline-none focus:border-[#E03455]/50"
+            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm placeholder-gray-400 focus:outline-none focus:border-[#E03455]/50"
           />
         </div>
 
@@ -100,13 +100,13 @@ function MenuContent() {
           <button
             onClick={() => setActiveCategory("all")}
             className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-              ${activeCategory === "all" ? "bg-[#E03455]/20 border-[#E03455]/60 text-[#E03455]" : "border-white/10 text-white/50 hover:text-white"}`}>
+              ${activeCategory === "all" ? "bg-[#E03455]/20 border-[#E03455]/60 text-[#E03455]" : "border-gray-200 text-gray-500 hover:text-gray-900"}`}>
             All
           </button>
           {categories.map((cat) => (
             <button key={cat.id} onClick={() => setActiveCategory(cat.id)}
               className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-all
-                ${activeCategory === cat.id ? "bg-[#E03455]/20 border-[#E03455]/60 text-[#E03455]" : "border-white/10 text-white/50 hover:text-white"}`}>
+                ${activeCategory === cat.id ? "bg-[#E03455]/20 border-[#E03455]/60 text-[#E03455]" : "border-gray-200 text-gray-500 hover:text-gray-900"}`}>
               {cat.icon} {cat.name}
             </button>
           ))}
@@ -118,18 +118,18 @@ function MenuContent() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-[#1C1C36] border border-white/10 rounded-2xl p-4 flex items-center gap-4 animate-pulse">
-                <div className="w-16 h-16 bg-white/5 rounded-xl flex-shrink-0" />
+              <div key={i} className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center gap-4 animate-pulse">
+                <div className="w-16 h-16 bg-gray-50 rounded-xl flex-shrink-0" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-white/10 rounded w-32" />
-                  <div className="h-3 bg-white/5 rounded w-48" />
-                  <div className="h-4 bg-white/10 rounded w-16" />
+                  <div className="h-4 bg-gray-100 rounded w-32" />
+                  <div className="h-3 bg-gray-50 rounded w-48" />
+                  <div className="h-4 bg-gray-100 rounded w-16" />
                 </div>
               </div>
             ))}
           </div>
         ) : menuItems.length === 0 ? (
-          <div className="text-center py-16 text-white/40">
+          <div className="text-center py-16 text-gray-400">
             <p className="text-4xl mb-3">🔍</p>
             <p>{search ? `No items found for "${search}"` : "No items available"}</p>
           </div>
@@ -138,8 +138,8 @@ function MenuContent() {
             {menuItems.map((item) => {
               const inCart = cartItems.find((c) => c.id === item.id);
               return (
-                <div key={item.id} className="bg-[#1C1C36] border border-white/10 rounded-2xl p-4 flex items-center gap-4">
-                  <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
+                <div key={item.id} className="bg-white border border-gray-200 rounded-2xl p-4 flex items-center gap-4">
+                  <div className="w-16 h-16 bg-gray-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
                     {item.category.icon ?? "🍽"}
                   </div>
 
@@ -151,7 +151,7 @@ function MenuContent() {
                       )}
                     </div>
                     <p className="font-semibold text-sm">{item.name}</p>
-                    {item.description && <p className="text-xs text-white/50 mt-0.5 line-clamp-1">{item.description}</p>}
+                    {item.description && <p className="text-xs text-gray-500 mt-0.5 line-clamp-1">{item.description}</p>}
                     <p className="font-bold text-[#E03455] mt-1">₹{item.basePrice}</p>
                   </div>
 
@@ -165,7 +165,7 @@ function MenuContent() {
                     ) : (
                       <div className="flex items-center gap-2">
                         <button onClick={() => removeItem(item.id)}
-                          className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 font-bold flex items-center justify-center">−</button>
+                          className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 font-bold flex items-center justify-center">−</button>
                         <span className="font-bold w-4 text-center">{inCart.quantity}</span>
                         <button
                           onClick={() => addItem({ id: item.id, name: item.name, price: item.basePrice, isVeg: item.isVeg, category: item.category.name })}
@@ -184,8 +184,8 @@ function MenuContent() {
       {hydrated && cartCount > 0 && (
         <div className="fixed bottom-6 inset-x-4 max-w-lg mx-auto z-40">
           <button onClick={() => setCartOpen(true)}
-            className="w-full bg-[#E03455] hover:bg-[#FF4060] text-white font-bold rounded-2xl py-4 flex items-center justify-between px-6 shadow-2xl transition-all">
-            <span className="bg-black/20 rounded-full w-7 h-7 flex items-center justify-center text-sm font-black">{cartCount}</span>
+            className="w-full bg-[#E03455] hover:bg-[#C82040] text-white font-bold rounded-2xl py-4 flex items-center justify-between px-6 shadow-2xl transition-all">
+            <span className="bg-gray-900/20 rounded-full w-7 h-7 flex items-center justify-center text-sm font-black">{cartCount}</span>
             <span>View Cart</span>
             <span>₹{cartTotal}</span>
           </button>
@@ -195,11 +195,11 @@ function MenuContent() {
       {/* Cart Drawer */}
       {cartOpen && (
         <>
-          <div className="fixed inset-0 z-40 bg-black/60" onClick={() => setCartOpen(false)} />
-          <div className="fixed bottom-0 inset-x-0 z-50 bg-[#1C1C36] border-t border-white/10 rounded-t-3xl p-6 max-h-[80vh] flex flex-col">
+          <div className="fixed inset-0 z-40 bg-gray-900/50" onClick={() => setCartOpen(false)} />
+          <div className="fixed bottom-0 inset-x-0 z-50 bg-white border-t border-gray-200 rounded-t-3xl p-6 max-h-[80vh] flex flex-col">
             <div className="flex justify-between items-center mb-4">
               <h2 className="font-bold text-lg">Your Cart</h2>
-              <button onClick={() => setCartOpen(false)} className="text-white/50 hover:text-white">✕</button>
+              <button onClick={() => setCartOpen(false)} className="text-gray-500 hover:text-gray-900">✕</button>
             </div>
 
             <div className="flex-1 overflow-y-auto space-y-3 mb-4">
@@ -210,7 +210,7 @@ function MenuContent() {
                     <p className="text-[#E03455] text-sm">₹{item.price * item.quantity}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => removeItem(item.id)} className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center font-bold">−</button>
+                    <button onClick={() => removeItem(item.id)} className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center font-bold">−</button>
                     <span className="text-sm font-bold w-4 text-center">{item.quantity}</span>
                     <button
                       onClick={() => addItem({ id: item.id, name: item.name, price: item.price, isVeg: item.isVeg })}
@@ -220,18 +220,18 @@ function MenuContent() {
               ))}
             </div>
 
-            <div className="border-t border-white/10 pt-4 space-y-2 mb-4">
-              <div className="flex justify-between text-sm text-white/60"><span>Subtotal</span><span>₹{cartTotal}</span></div>
-              <div className="flex justify-between text-sm text-white/60"><span>GST (5%)</span><span>₹{tax}</span></div>
-              <div className="flex justify-between text-sm text-white/60"><span>Packaging</span><span>₹{packaging}</span></div>
-              <div className="flex justify-between font-bold text-base pt-1 border-t border-white/10">
+            <div className="border-t border-gray-200 pt-4 space-y-2 mb-4">
+              <div className="flex justify-between text-sm text-gray-500"><span>Subtotal</span><span>₹{cartTotal}</span></div>
+              <div className="flex justify-between text-sm text-gray-500"><span>GST (5%)</span><span>₹{tax}</span></div>
+              <div className="flex justify-between text-sm text-gray-500"><span>Packaging</span><span>₹{packaging}</span></div>
+              <div className="flex justify-between font-bold text-base pt-1 border-t border-gray-200">
                 <span>Total</span>
                 <span className="text-[#E03455]">₹{cartTotal + tax + packaging}</span>
               </div>
             </div>
 
             <button onClick={goToCheckout}
-              className="w-full bg-[#E03455] hover:bg-[#FF4060] text-white font-bold py-4 rounded-2xl transition-colors">
+              className="w-full bg-[#E03455] hover:bg-[#C82040] text-white font-bold py-4 rounded-2xl transition-colors">
               Proceed to Checkout · ₹{cartTotal + tax + packaging}
             </button>
           </div>
@@ -243,7 +243,7 @@ function MenuContent() {
 
 export default function MenuPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#14142A] flex items-center justify-center text-white/50">Loading menu...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F4F4F9] flex items-center justify-center text-gray-500">Loading menu...</div>}>
       <MenuContent />
     </Suspense>
   );

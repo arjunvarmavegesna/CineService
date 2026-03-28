@@ -19,7 +19,7 @@ const STATUS_COLORS: Record<string, string> = {
   OUT_FOR_DELIVERY: "bg-purple-500/15 text-purple-400",
   DELIVERED: "bg-green-500/15 text-green-400",
   CANCELLED: "bg-red-500/15 text-red-400",
-  REFUNDED: "bg-white/10 text-white/40",
+  REFUNDED: "bg-gray-100 text-gray-400",
 };
 
 export default function AdminDashboard() {
@@ -43,16 +43,16 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-white/40 text-sm mt-1">Today's overview</p>
+        <p className="text-gray-400 text-sm mt-1">Today's overview</p>
       </div>
 
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-[#24244A] border border-white/10 rounded-2xl p-5 animate-pulse">
-              <div className="h-3 bg-white/10 rounded mb-3 w-24" />
-              <div className="h-8 bg-white/10 rounded mb-2 w-16" />
-              <div className="h-3 bg-white/5 rounded w-20" />
+            <div key={i} className="bg-[#F0F0F8] border border-gray-200 rounded-2xl p-5 animate-pulse">
+              <div className="h-3 bg-gray-100 rounded mb-3 w-24" />
+              <div className="h-8 bg-gray-100 rounded mb-2 w-16" />
+              <div className="h-3 bg-gray-50 rounded w-20" />
             </div>
           ))}
         </div>
@@ -64,10 +64,10 @@ export default function AdminDashboard() {
             { label: "Today's Revenue", value: formatCurrency(data?.totalRevenue ?? 0), sub: "Excl. cancelled", color: "text-green-400" },
             { label: "Avg Order Value", value: formatCurrency(avgValue), sub: "Per order today", color: "text-purple-400" },
           ].map((m) => (
-            <div key={m.label} className="bg-[#24244A] border border-white/10 rounded-2xl p-5">
-              <p className="text-xs text-white/40 mb-2 uppercase tracking-wide">{m.label}</p>
+            <div key={m.label} className="bg-[#F0F0F8] border border-gray-200 rounded-2xl p-5">
+              <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">{m.label}</p>
               <p className={`text-2xl font-black ${m.color}`}>{m.value}</p>
-              <p className="text-xs text-white/40 mt-1">{m.sub}</p>
+              <p className="text-xs text-gray-400 mt-1">{m.sub}</p>
             </div>
           ))}
         </div>
@@ -77,12 +77,12 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[
           { label: "Live Orders", href: "/admin/orders", icon: "⚡", color: "border-[#E03455]/30 hover:border-[#E03455]/60" },
-          { label: "Manage Menu", href: "/admin/menu", icon: "🍽", color: "border-white/10 hover:border-white/20" },
-          { label: "Theaters & QR", href: "/admin/theaters", icon: "🏛", color: "border-white/10 hover:border-white/20" },
-          { label: "View Reports", href: "/admin/reports", icon: "📊", color: "border-white/10 hover:border-white/20" },
+          { label: "Manage Menu", href: "/admin/menu", icon: "🍽", color: "border-gray-200 hover:border-gray-300" },
+          { label: "Theaters & QR", href: "/admin/theaters", icon: "🏛", color: "border-gray-200 hover:border-gray-300" },
+          { label: "View Reports", href: "/admin/reports", icon: "📊", color: "border-gray-200 hover:border-gray-300" },
         ].map((a) => (
           <Link key={a.href} href={a.href}
-            className={`bg-[#24244A] border ${a.color} rounded-xl p-4 flex items-center gap-3 transition-all hover:bg-white/5`}>
+            className={`bg-[#F0F0F8] border ${a.color} rounded-xl p-4 flex items-center gap-3 transition-all hover:bg-gray-50`}>
             <span className="text-2xl">{a.icon}</span>
             <span className="text-sm font-medium">{a.label}</span>
           </Link>
@@ -90,15 +90,15 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent orders */}
-      <div className="bg-[#24244A] border border-white/10 rounded-2xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between">
+      <div className="bg-[#F0F0F8] border border-gray-200 rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="font-semibold">Recent Orders</h2>
           <Link href="/admin/orders" className="text-sm text-[#E03455] hover:underline">View live board →</Link>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-white/40 text-xs uppercase tracking-wide border-b border-white/10">
+              <tr className="text-gray-400 text-xs uppercase tracking-wide border-b border-gray-200">
                 <th className="text-left px-6 py-3">Order #</th>
                 <th className="text-left px-6 py-3">Theater</th>
                 <th className="text-left px-6 py-3">Seat</th>
@@ -109,9 +109,9 @@ export default function AdminDashboard() {
             </thead>
             <tbody className="divide-y divide-white/[0.05]">
               {(data?.recentOrders ?? []).map((order) => (
-                <tr key={order.orderNumber} className="hover:bg-white/[0.02] transition-colors">
+                <tr key={order.orderNumber} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-3.5 font-mono text-[#E03455] text-xs font-bold">{order.orderNumber}</td>
-                  <td className="px-6 py-3.5 text-white/60 text-xs">{order.theater.name}</td>
+                  <td className="px-6 py-3.5 text-gray-500 text-xs">{order.theater.name}</td>
                   <td className="px-6 py-3.5 font-black text-lg">{order.seatLabel}</td>
                   <td className="px-6 py-3.5 font-semibold">{formatCurrency(order.totalAmount)}</td>
                   <td className="px-6 py-3.5">
@@ -119,12 +119,12 @@ export default function AdminDashboard() {
                       {order.status.replace(/_/g, " ")}
                     </span>
                   </td>
-                  <td className="px-6 py-3.5 text-white/40 text-xs">{formatDate(order.createdAt)}</td>
+                  <td className="px-6 py-3.5 text-gray-400 text-xs">{formatDate(order.createdAt)}</td>
                 </tr>
               ))}
               {!loading && (data?.recentOrders ?? []).length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-10 text-center text-white/30">No orders yet. Seed the database to get started.</td>
+                  <td colSpan={6} className="px-6 py-10 text-center text-gray-400">No orders yet. Seed the database to get started.</td>
                 </tr>
               )}
             </tbody>
@@ -134,10 +134,10 @@ export default function AdminDashboard() {
 
       {/* Seed button for dev */}
       {process.env.NODE_ENV !== "production" && (
-        <div className="bg-white/[0.02] border border-white/[0.06] rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium">Seed Database</p>
-            <p className="text-xs text-white/40">Populate with theaters, screens, seats, menu items, and QR codes</p>
+            <p className="text-xs text-gray-400">Populate with theaters, screens, seats, menu items, and QR codes</p>
           </div>
           <button
             onClick={async () => {
@@ -146,7 +146,7 @@ export default function AdminDashboard() {
               alert(d.message ?? d.error ?? "Done");
               window.location.reload();
             }}
-            className="bg-white/10 hover:bg-white/20 text-white text-sm px-4 py-2 rounded-lg transition-colors"
+            className="bg-gray-100 hover:bg-gray-200 text-gray-900 text-sm px-4 py-2 rounded-lg transition-colors"
           >
             Seed Data
           </button>

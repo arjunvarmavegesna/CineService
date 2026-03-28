@@ -91,42 +91,42 @@ export default function LiveOrdersPage() {
           <h1 className="text-2xl font-bold">Live Orders</h1>
           <div className="flex items-center gap-2 mt-1">
             <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            <span className="text-sm text-white/40">{activeOrders.length} active · auto-refreshes every 10s</span>
+            <span className="text-sm text-gray-400">{activeOrders.length} active · auto-refreshes every 10s</span>
           </div>
         </div>
         <button
           onClick={load}
-          className="text-sm border border-white/10 text-white/50 hover:text-white px-4 py-2 rounded-lg transition-colors"
+          className="text-sm border border-gray-200 text-gray-500 hover:text-gray-900 px-4 py-2 rounded-lg transition-colors"
         >
           ↻ Refresh
         </button>
       </div>
 
       {loading ? (
-        <div className="text-white/40 text-center py-16">Loading orders...</div>
+        <div className="text-gray-400 text-center py-16">Loading orders...</div>
       ) : (
         <div className="overflow-x-auto pb-4">
           <div className="flex gap-4 min-w-max">
             {COLUMNS.map((col) => {
               const colOrders = orders.filter((o) => o.status === col.key);
               return (
-                <div key={col.key} className="w-64 bg-[#24244A] border border-white/10 rounded-2xl overflow-hidden flex flex-col">
-                  <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+                <div key={col.key} className="w-64 bg-[#F0F0F8] border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
+                  <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${col.dot} ${col.key === "PENDING" && colOrders.length > 0 ? "animate-pulse" : ""}`} />
                       <span className={`text-sm font-semibold ${col.color}`}>{col.label}</span>
                     </div>
-                    <span className="text-xs bg-white/10 px-2 py-0.5 rounded-full text-white/60">{colOrders.length}</span>
+                    <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full text-gray-500">{colOrders.length}</span>
                   </div>
 
                   <div className="flex-1 p-3 space-y-3 min-h-24 overflow-y-auto max-h-[calc(100vh-220px)]">
                     {colOrders.length === 0 ? (
-                      <div className="text-center py-8 text-white/20 text-sm">Empty</div>
+                      <div className="text-center py-8 text-gray-300 text-sm">Empty</div>
                     ) : (
                       colOrders.map((order) => {
                         const urgent = isUrgent(order);
                         return (
-                          <div key={order.id} className={`bg-[#1C1C36] border rounded-xl p-3 space-y-2 ${urgent ? "border-red-500/40" : "border-white/10"}`}>
+                          <div key={order.id} className={`bg-white border rounded-xl p-3 space-y-2 ${urgent ? "border-red-500/40" : "border-gray-200"}`}>
                             <div className="flex items-center justify-between">
                               <span className="text-xs font-mono text-[#E03455] font-bold">{order.orderNumber}</span>
                               {urgent && (
@@ -137,18 +137,18 @@ export default function LiveOrdersPage() {
                             <div className="flex items-center justify-between">
                               <div>
                                 <span className="text-xl font-black">{order.seatLabel}</span>
-                                <span className="text-xs text-white/40 ml-2">{order.screen.name}</span>
+                                <span className="text-xs text-gray-400 ml-2">{order.screen.name}</span>
                               </div>
-                              <span className="text-xs text-white/30">{timeAgo(order.createdAt)}</span>
+                              <span className="text-xs text-gray-400">{timeAgo(order.createdAt)}</span>
                             </div>
 
                             <div className="space-y-0.5">
                               {order.items.map((item, i) => (
-                                <p key={i} className="text-xs text-white/60">• {item.name} × {item.quantity}</p>
+                                <p key={i} className="text-xs text-gray-500">• {item.name} × {item.quantity}</p>
                               ))}
                             </div>
 
-                            <div className="flex items-center justify-between pt-1 border-t border-white/10">
+                            <div className="flex items-center justify-between pt-1 border-t border-gray-200">
                               <span className="text-sm font-bold">{formatCurrency(order.totalAmount)}</span>
                               <div className="flex gap-1">
                                 {NEXT_STATUS[order.status] && (

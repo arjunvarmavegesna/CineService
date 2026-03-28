@@ -72,26 +72,26 @@ export default function SettingsPage() {
   const pkg = parseFloat(form.packagingFee || "0");
   const svc = parseFloat(form.serviceCharge || "0");
 
-  if (loading) return <div className="text-white/40 text-center py-16">Loading...</div>;
+  if (loading) return <div className="text-gray-400 text-center py-16">Loading...</div>;
 
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-xl font-bold">Settings</h1>
-        <p className="text-sm text-white/40 mt-0.5">Configure pricing, fees, and delivery for each theater</p>
+        <p className="text-sm text-gray-400 mt-0.5">Configure pricing, fees, and delivery for each theater</p>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-5">
         {/* Theater Selector */}
         <div className="lg:col-span-1">
-          <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Select Theater</p>
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Select Theater</p>
           <div className="space-y-2">
             {theaters.map((t) => (
               <button
                 key={t.id}
                 onClick={() => selectTheater(t)}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm
-                  ${selected?.id === t.id ? "bg-[#E03455]/15 border-[#E03455]/40 text-[#E03455]" : "bg-white/5 border-white/10 text-white/60 hover:text-white hover:border-white/20"}`}
+                  ${selected?.id === t.id ? "bg-[#E03455]/15 border-[#E03455]/40 text-[#E03455]" : "bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-300"}`}
               >
                 <p className="font-medium">{t.name}</p>
                 <p className="text-xs opacity-60 mt-0.5">{t.city}</p>
@@ -103,7 +103,7 @@ export default function SettingsPage() {
         {/* Settings Form */}
         <div className="lg:col-span-2">
           {selected ? (
-            <div className="bg-[#1C1C36] border border-white/[0.06] rounded-2xl p-6">
+            <div className="bg-white border border-gray-100 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="font-semibold">{selected.name}</h2>
                 {saved && (
@@ -116,7 +116,7 @@ export default function SettingsPage() {
               <div className="space-y-5">
                 {/* Pricing */}
                 <div>
-                  <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Pricing & Fees</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Pricing & Fees</p>
                   <div className="grid grid-cols-2 gap-4">
                     {[
                       { label: "GST Tax Rate (%)", key: "taxRate", desc: "Applied on subtotal" },
@@ -125,38 +125,38 @@ export default function SettingsPage() {
                       { label: "Delivery ETA (min)", key: "deliveryEtaMin", desc: "Shown to customer" },
                     ].map(({ label, key, desc }) => (
                       <div key={key}>
-                        <label className="text-xs text-white/50 block mb-1">{label}</label>
+                        <label className="text-xs text-gray-500 block mb-1">{label}</label>
                         <input
                           type="number"
                           value={form[key as keyof typeof form]}
                           onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                          className="w-full bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
                         />
-                        <p className="text-xs text-white/30 mt-1">{desc}</p>
+                        <p className="text-xs text-gray-400 mt-1">{desc}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
                 {/* Preview */}
-                <div className="bg-white/[0.03] border border-white/[0.06] rounded-xl p-4">
-                  <p className="text-xs text-white/40 uppercase tracking-wide mb-3">Preview — ₹{sampleOrder} order</p>
+                <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Preview — ₹{sampleOrder} order</p>
                   <div className="space-y-2 text-sm">
-                    <div className="flex justify-between text-white/60">
+                    <div className="flex justify-between text-gray-500">
                       <span>Subtotal</span><span>₹{sampleOrder}</span>
                     </div>
-                    <div className="flex justify-between text-white/60">
+                    <div className="flex justify-between text-gray-500">
                       <span>GST ({form.taxRate}%)</span><span>₹{tax.toFixed(0)}</span>
                     </div>
-                    <div className="flex justify-between text-white/60">
+                    <div className="flex justify-between text-gray-500">
                       <span>Packaging</span><span>₹{pkg}</span>
                     </div>
                     {svc > 0 && (
-                      <div className="flex justify-between text-white/60">
+                      <div className="flex justify-between text-gray-500">
                         <span>Service charge</span><span>₹{svc}</span>
                       </div>
                     )}
-                    <div className="flex justify-between font-bold text-base border-t border-white/10 pt-2">
+                    <div className="flex justify-between font-bold text-base border-t border-gray-200 pt-2">
                       <span>Total</span>
                       <span className="text-[#E03455]">₹{(sampleOrder + tax + pkg + svc).toFixed(0)}</span>
                     </div>
@@ -173,14 +173,14 @@ export default function SettingsPage() {
                 <button
                   onClick={save}
                   disabled={saving}
-                  className="w-full bg-[#E03455] hover:bg-[#FF4060] disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
+                  className="w-full bg-[#E03455] hover:bg-[#C82040] disabled:opacity-50 text-white font-semibold py-3 rounded-xl transition-colors"
                 >
                   {saving ? "Saving..." : "Save Settings"}
                 </button>
               </div>
             </div>
           ) : (
-            <div className="text-center py-16 text-white/30">Select a theater to configure settings</div>
+            <div className="text-center py-16 text-gray-400">Select a theater to configure settings</div>
           )}
         </div>
       </div>
