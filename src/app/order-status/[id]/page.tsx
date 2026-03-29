@@ -9,7 +9,7 @@ interface OrderItem { name: string; quantity: number; unitPrice: number; totalPr
 interface StatusLog { status: string; createdAt: string }
 interface Order {
   id: string; orderNumber: string; seatLabel: string; status: string;
-  subtotal: number; taxAmount: number; packagingFee: number; totalAmount: number;
+  subtotal: number; taxAmount: number; packagingFee: number; discount: number; totalAmount: number;
   customerName?: string; estimatedAt?: string; createdAt: string;
   items: OrderItem[];
   theater: { name: string; city: string };
@@ -164,8 +164,15 @@ export default function OrderStatusPage() {
           </div>
           <div className="border-t border-gray-200 pt-3 space-y-1.5">
             <div className="flex justify-between text-sm text-gray-500"><span>Subtotal</span><span>{formatCurrency(order.subtotal)}</span></div>
-            <div className="flex justify-between text-sm text-gray-500"><span>GST</span><span>{formatCurrency(order.taxAmount)}</span></div>
-            <div className="flex justify-between text-sm text-gray-500"><span>Packaging</span><span>{formatCurrency(order.packagingFee)}</span></div>
+            {order.taxAmount > 0 && (
+              <div className="flex justify-between text-sm text-gray-500"><span>GST</span><span>{formatCurrency(order.taxAmount)}</span></div>
+            )}
+            {order.packagingFee > 0 && (
+              <div className="flex justify-between text-sm text-gray-500"><span>Packaging</span><span>{formatCurrency(order.packagingFee)}</span></div>
+            )}
+            {order.discount > 0 && (
+              <div className="flex justify-between text-sm text-green-500"><span>Discount</span><span>−{formatCurrency(order.discount)}</span></div>
+            )}
             <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-200">
               <span>Total</span>
               <span className="text-[#E03455]">{formatCurrency(order.totalAmount)}</span>

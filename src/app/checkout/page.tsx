@@ -97,11 +97,22 @@ function CheckoutContent() {
   const displayScreenId = screenId || seat?.screenId || "";
   const displaySeatId = seatId || seat?.seatId || "";
 
-  // Preview totals (estimated; server recalculates for actual charge)
+  // Fetch actual theater fee settings so preview matches what's charged
+  const [feeSettings, setFeeSettings] = useState<{ taxRate: number; packagingFee: number } | null>(null);
+  useEffect(() => {
+    if (!displayTheaterId) return;
+    fetch(`/api/theaters/${displayTheaterId}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.data?.settings) setFeeSettings(d.data.settings); })
+      .catch(() => {});
+  }, [displayTheaterId]);
+
+  const taxRate = feeSettings?.taxRate ?? 5;
+  const packagingFee = feeSettings?.packagingFee ?? 10;
+
   const subtotal = hydrated ? getCartTotal(items) : 0;
-  const tax = Math.round(subtotal * 0.05);
-  const packaging = 10;
-  const previewTotal = subtotal + tax + packaging;
+  const tax = Math.round(subtotal * (taxRate / 100));
+  const previewTotal = subtotal + tax + packagingFee;
 
   const initiatePayment = async () => {
     if (!name.trim()) { setError("Please enter your name"); return; }
@@ -388,21 +399,25 @@ function CheckoutContent() {
               <span>Subtotal</span>
               <span>₹{subtotal}</span>
             </div>
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>GST (5%)</span>
-              <span>₹{tax}</span>
-            </div>
-            <div className="flex justify-between text-sm text-gray-500">
-              <span>Packaging</span>
-              <span>₹{packaging}</span>
-            </div>
+            {tax > 0 && (
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>GST ({taxRate}%)</span>
+                <span>₹{tax}</span>
+              </div>
+            )}
+            {packagingFee > 0 && (
+              <div className="flex justify-between text-sm text-gray-500">
+                <span>Packaging</span>
+                <span>₹{packagingFee}</span>
+              </div>
+            )}
             <div className="flex justify-between font-bold text-base pt-2 border-t border-gray-200">
-              <span>Total (est.)</span>
+              <span>Total</span>
               <span className="text-[#E03455]">₹{previewTotal}</span>
             </div>
           </div>
           <p className="text-[10px] text-gray-400 mt-2">
-            Final amount is calculated at payment and shown in the Razorpay checkout.
+            Exact amount confirmed at payment.
           </p>
         </div>
 
@@ -483,7 +498,7 @@ function CheckoutContent() {
               {loadingMessage || "Processing…"}
             </>
           ) : (
-            `Pay ₹${previewTotal} · Razorpay`
+            `Pay ₹${previewTotal}`
           )}
         </button>
 

@@ -179,7 +179,6 @@ export default function TheatersPage() {
     const data = await res.json();
     if (res.ok) {
       setConfirmDeleteId(null);
-      // If we were viewing this theater's screens/seats, go back
       if (selectedTheater?.id === id) {
         setSelectedTheater(null);
         setSelectedScreen(null);
@@ -188,6 +187,23 @@ export default function TheatersPage() {
       loadTheaters();
     } else {
       setDeleteError(data.error ?? "Failed to delete theater");
+    }
+    setDeleting(false);
+  };
+
+  const deactivateTheater = async (id: string) => {
+    setDeleting(true);
+    setDeleteError("");
+    const res = await fetch(`/api/admin/theaters/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive: false }),
+    });
+    if (res.ok) {
+      setConfirmDeleteId(null);
+      loadTheaters();
+    } else {
+      setDeleteError("Failed to deactivate theater");
     }
     setDeleting(false);
   };
@@ -206,6 +222,23 @@ export default function TheatersPage() {
       if (selectedTheater) loadScreens(selectedTheater.id);
     } else {
       setDeleteError(data.error ?? "Failed to delete screen");
+    }
+    setDeleting(false);
+  };
+
+  const deactivateScreen = async (id: string) => {
+    setDeleting(true);
+    setDeleteError("");
+    const res = await fetch(`/api/admin/screens/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive: false }),
+    });
+    if (res.ok) {
+      setConfirmDeleteId(null);
+      if (selectedTheater) loadScreens(selectedTheater.id);
+    } else {
+      setDeleteError("Failed to deactivate screen");
     }
     setDeleting(false);
   };
@@ -335,26 +368,37 @@ export default function TheatersPage() {
                         </div>
                       </div>
 
-                      {/* Inline delete confirm */}
+                      {/* Inline delete / deactivate confirm */}
                       {confirmDeleteId === t.id ? (
-                        <div className="flex flex-col items-end gap-1">
+                        <div className="flex flex-col items-end gap-1.5">
                           {deleteError && (
-                            <p className="text-xs text-red-500 max-w-[200px] text-right">{deleteError}</p>
+                            <p className="text-xs text-red-500 max-w-[220px] text-right leading-snug">{deleteError}</p>
                           )}
-                          <div className="flex gap-1.5">
+                          <div className="flex gap-1.5 flex-wrap justify-end">
                             <button
                               onClick={() => { setConfirmDeleteId(null); setDeleteError(""); }}
                               className="text-xs border border-gray-200 text-gray-500 px-2.5 py-1 rounded-lg"
                             >
                               Cancel
                             </button>
-                            <button
-                              onClick={() => deleteTheater(t.id)}
-                              disabled={deleting}
-                              className="text-xs bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg disabled:opacity-50"
-                            >
-                              {deleting ? "Deleting…" : "Yes, Delete"}
-                            </button>
+                            {deleteError && (
+                              <button
+                                onClick={() => deactivateTheater(t.id)}
+                                disabled={deleting}
+                                className="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-lg disabled:opacity-50"
+                              >
+                                {deleting ? "…" : "Deactivate"}
+                              </button>
+                            )}
+                            {!deleteError && (
+                              <button
+                                onClick={() => deleteTheater(t.id)}
+                                disabled={deleting}
+                                className="text-xs bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg disabled:opacity-50"
+                              >
+                                {deleting ? "Deleting…" : "Yes, Delete"}
+                              </button>
+                            )}
                           </div>
                         </div>
                       ) : (
@@ -404,24 +448,35 @@ export default function TheatersPage() {
                       </div>
 
                       {confirmDeleteId === s.id ? (
-                        <div className="flex flex-col items-end gap-1">
+                        <div className="flex flex-col items-end gap-1.5">
                           {deleteError && (
-                            <p className="text-xs text-red-500 max-w-[200px] text-right">{deleteError}</p>
+                            <p className="text-xs text-red-500 max-w-[220px] text-right leading-snug">{deleteError}</p>
                           )}
-                          <div className="flex gap-1.5">
+                          <div className="flex gap-1.5 flex-wrap justify-end">
                             <button
                               onClick={() => { setConfirmDeleteId(null); setDeleteError(""); }}
                               className="text-xs border border-gray-200 text-gray-500 px-2.5 py-1 rounded-lg"
                             >
                               Cancel
                             </button>
-                            <button
-                              onClick={() => deleteScreen(s.id)}
-                              disabled={deleting}
-                              className="text-xs bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg disabled:opacity-50"
-                            >
-                              {deleting ? "Deleting…" : "Yes, Delete"}
-                            </button>
+                            {deleteError && (
+                              <button
+                                onClick={() => deactivateScreen(s.id)}
+                                disabled={deleting}
+                                className="text-xs bg-amber-500 hover:bg-amber-600 text-white px-2.5 py-1 rounded-lg disabled:opacity-50"
+                              >
+                                {deleting ? "…" : "Deactivate"}
+                              </button>
+                            )}
+                            {!deleteError && (
+                              <button
+                                onClick={() => deleteScreen(s.id)}
+                                disabled={deleting}
+                                className="text-xs bg-red-500 hover:bg-red-600 text-white px-2.5 py-1 rounded-lg disabled:opacity-50"
+                              >
+                                {deleting ? "Deleting…" : "Yes, Delete"}
+                              </button>
+                            )}
                           </div>
                         </div>
                       ) : (

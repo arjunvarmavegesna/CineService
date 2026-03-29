@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { timeAgo, formatCurrency } from "@/lib/utils";
 
 interface OrderItem { name: string; quantity: number; totalPrice: number }
@@ -49,6 +49,16 @@ export default function LiveOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState<string | null>(null);
+  const [showDelivered, setShowDelivered] = useState(false);
+  const colRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scrollToCol = (key: string) => {
+    const el = colRefs.current[key];
+    const container = scrollRef.current;
+    if (!el || !container) return;
+    container.scrollTo({ left: el.offsetLeft - 16, behavior: "smooth" });
+  };
 
   const load = useCallback(async () => {
     const res = await fetch("/api/admin/orders?limit=100");
@@ -110,15 +120,42 @@ export default function LiveOrdersPage() {
         </button>
       </div>
 
+      {/* Jump tabs */}
+      {!loading && (
+        <div className="flex gap-2 flex-wrap">
+          {COLUMNS.filter((c) => showDelivered || c.key !== "DELIVERED").map((col) => {
+            const count = orders.filter((o) => o.status === col.key).length;
+            return (
+              <button
+                key={col.key}
+                onClick={() => scrollToCol(col.key)}
+                className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-colors
+                  ${count > 0 ? `border-gray-200 ${col.color} bg-gray-50 hover:bg-gray-100` : "border-gray-100 text-gray-300 bg-gray-50"}`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${col.dot}`} />
+                {col.label}
+                {count > 0 && <span className="font-bold">{count}</span>}
+              </button>
+            );
+          })}
+          <button
+            onClick={() => setShowDelivered((v) => !v)}
+            className="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-400 hover:text-gray-600 bg-gray-50 ml-auto"
+          >
+            {showDelivered ? "Hide Delivered" : "Show Delivered"}
+          </button>
+        </div>
+      )}
+
       {loading ? (
         <div className="text-gray-400 text-center py-16">Loading orders...</div>
       ) : (
-        <div className="overflow-x-auto pb-4">
+        <div ref={scrollRef} className="overflow-x-auto pb-4">
           <div className="flex gap-4 min-w-max">
-            {COLUMNS.map((col) => {
+            {COLUMNS.filter((c) => showDelivered || c.key !== "DELIVERED").map((col) => {
               const colOrders = orders.filter((o) => o.status === col.key);
               return (
-                <div key={col.key} className="w-64 bg-[#F0F0F8] border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
+                <div key={col.key} ref={(el) => { colRefs.current[col.key] = el; }} className="w-64 bg-[#F0F0F8] border border-gray-200 rounded-2xl overflow-hidden flex flex-col">
                   <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${col.dot} ${col.key === "PENDING" && colOrders.length > 0 ? "animate-pulse" : ""}`} />

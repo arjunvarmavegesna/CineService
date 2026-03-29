@@ -10,15 +10,45 @@ interface Theater {
   };
 }
 
+function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!enabled)}
+      className={`relative w-9 h-5 rounded-full transition-colors flex-shrink-0 ${enabled ? "bg-[#E03455]" : "bg-gray-200"}`}
+    >
+      <span
+        className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform ${enabled ? "translate-x-4" : "translate-x-0.5"}`}
+      />
+    </button>
+  );
+}
+
 export default function SettingsPage() {
   const [theaters, setTheaters] = useState<Theater[]>([]);
   const [selected, setSelected] = useState<Theater | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  const [taxEnabled, setTaxEnabled] = useState(true);
+  const [packagingEnabled, setPackagingEnabled] = useState(true);
   const [form, setForm] = useState({
     taxRate: "5", packagingFee: "10", serviceCharge: "0", deliveryEtaMin: "12",
   });
+
+  const applySettings = (s: Theater["settings"]) => {
+    if (!s) return;
+    setTaxEnabled(s.taxRate > 0);
+    setPackagingEnabled(s.packagingFee > 0);
+    setForm({
+      // Keep the last non-zero value so toggling back on restores it
+      taxRate: s.taxRate > 0 ? s.taxRate.toString() : form.taxRate,
+      packagingFee: s.packagingFee > 0 ? s.packagingFee.toString() : form.packagingFee,
+      serviceCharge: s.serviceCharge.toString(),
+      deliveryEtaMin: s.deliveryEtaMin.toString(),
+    });
+  };
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -27,23 +57,17 @@ export default function SettingsPage() {
     setTheaters(data.data ?? []);
     if (data.data?.length > 0) {
       setSelected(data.data[0]);
-      const s = data.data[0].settings;
-      if (s) setForm({ taxRate: s.taxRate.toString(), packagingFee: s.packagingFee.toString(), serviceCharge: s.serviceCharge.toString(), deliveryEtaMin: s.deliveryEtaMin.toString() });
+      applySettings(data.data[0].settings);
     }
     setLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => { load(); }, [load]);
 
   const selectTheater = (t: Theater) => {
     setSelected(t);
-    const s = t.settings;
-    setForm(s ? {
-      taxRate: s.taxRate.toString(),
-      packagingFee: s.packagingFee.toString(),
-      serviceCharge: s.serviceCharge.toString(),
-      deliveryEtaMin: s.deliveryEtaMin.toString(),
-    } : { taxRate: "5", packagingFee: "10", serviceCharge: "0", deliveryEtaMin: "12" });
+    applySettings(t.settings ?? { taxRate: 5, packagingFee: 10, serviceCharge: 0, deliveryEtaMin: 12 });
   };
 
   const save = async () => {
@@ -54,10 +78,10 @@ export default function SettingsPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         settings: {
-          taxRate: parseFloat(form.taxRate),
-          packagingFee: parseFloat(form.packagingFee),
-          serviceCharge: parseFloat(form.serviceCharge),
-          deliveryEtaMin: parseInt(form.deliveryEtaMin),
+          taxRate: taxEnabled ? parseFloat(form.taxRate) || 0 : 0,
+          packagingFee: packagingEnabled ? parseFloat(form.packagingFee) || 0 : 0,
+          serviceCharge: parseFloat(form.serviceCharge) || 0,
+          deliveryEtaMin: parseInt(form.deliveryEtaMin) || 12,
         },
       }),
     });
@@ -67,10 +91,13 @@ export default function SettingsPage() {
     load();
   };
 
+  // Live preview
+  const effectiveTaxRate = taxEnabled ? parseFloat(form.taxRate || "0") : 0;
+  const effectivePkgFee = packagingEnabled ? parseFloat(form.packagingFee || "0") : 0;
+  const svcFee = parseFloat(form.serviceCharge || "0");
   const sampleOrder = 400;
-  const tax = (sampleOrder * parseFloat(form.taxRate || "0")) / 100;
-  const pkg = parseFloat(form.packagingFee || "0");
-  const svc = parseFloat(form.serviceCharge || "0");
+  const tax = (sampleOrder * effectiveTaxRate) / 100;
+  const previewTotal = sampleOrder + tax + effectivePkgFee + svcFee;
 
   if (loading) return <div className="text-gray-400 text-center py-16">Loading...</div>;
 
@@ -91,7 +118,9 @@ export default function SettingsPage() {
                 key={t.id}
                 onClick={() => selectTheater(t)}
                 className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm
-                  ${selected?.id === t.id ? "bg-[#E03455]/15 border-[#E03455]/40 text-[#E03455]" : "bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-300"}`}
+                  ${selected?.id === t.id
+                    ? "bg-[#E03455]/15 border-[#E03455]/40 text-[#E03455]"
+                    : "bg-gray-50 border-gray-200 text-gray-500 hover:text-gray-900 hover:border-gray-300"}`}
               >
                 <p className="font-medium">{t.name}</p>
                 <p className="text-xs opacity-60 mt-0.5">{t.city}</p>
@@ -113,60 +142,130 @@ export default function SettingsPage() {
                 )}
               </div>
 
-              <div className="space-y-5">
-                {/* Pricing */}
+              <div className="space-y-6">
+
+                {/* GST */}
                 <div>
-                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Pricing & Fees</p>
-                  <div className="grid grid-cols-2 gap-4">
-                    {[
-                      { label: "GST Tax Rate (%)", key: "taxRate", desc: "Applied on subtotal" },
-                      { label: "Packaging Fee (₹)", key: "packagingFee", desc: "Per order" },
-                      { label: "Service Charge (₹)", key: "serviceCharge", desc: "Optional service fee" },
-                      { label: "Delivery ETA (min)", key: "deliveryEtaMin", desc: "Shown to customer" },
-                    ].map(({ label, key, desc }) => (
-                      <div key={key}>
-                        <label className="text-xs text-gray-500 block mb-1">{label}</label>
-                        <input
-                          type="number"
-                          value={form[key as keyof typeof form]}
-                          onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
-                        />
-                        <p className="text-xs text-gray-400 mt-1">{desc}</p>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">GST / Tax</p>
+                      <p className="text-xs text-gray-400">Applied as a percentage of subtotal</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">{taxEnabled ? "Enabled" : "Disabled"}</span>
+                      <Toggle enabled={taxEnabled} onChange={setTaxEnabled} />
+                    </div>
+                  </div>
+                  <div className={`transition-opacity ${taxEnabled ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
+                    <label className="text-xs text-gray-500 block mb-1">Rate (%)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      max="30"
+                      value={form.taxRate}
+                      onChange={(e) => setForm({ ...form, taxRate: e.target.value })}
+                      disabled={!taxEnabled}
+                      className="w-40 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50 disabled:bg-gray-100"
+                    />
                   </div>
                 </div>
 
-                {/* Preview */}
+                <div className="border-t border-gray-100" />
+
+                {/* Packaging Fee */}
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">Packaging Fee</p>
+                      <p className="text-xs text-gray-400">Fixed amount added per order</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400">{packagingEnabled ? "Enabled" : "Disabled"}</span>
+                      <Toggle enabled={packagingEnabled} onChange={setPackagingEnabled} />
+                    </div>
+                  </div>
+                  <div className={`transition-opacity ${packagingEnabled ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
+                    <label className="text-xs text-gray-500 block mb-1">Amount (₹)</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={form.packagingFee}
+                      onChange={(e) => setForm({ ...form, packagingFee: e.target.value })}
+                      disabled={!packagingEnabled}
+                      className="w-40 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50 disabled:bg-gray-100"
+                    />
+                  </div>
+                </div>
+
+                <div className="border-t border-gray-100" />
+
+                {/* Other settings */}
+                <div>
+                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Other</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">Service Charge (₹)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={form.serviceCharge}
+                        onChange={(e) => setForm({ ...form, serviceCharge: e.target.value })}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Set 0 to disable</p>
+                    </div>
+                    <div>
+                      <label className="text-xs text-gray-500 block mb-1">Delivery ETA (min)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={form.deliveryEtaMin}
+                        onChange={(e) => setForm({ ...form, deliveryEtaMin: e.target.value })}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
+                      />
+                      <p className="text-xs text-gray-400 mt-1">Shown to customer</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Live Preview */}
                 <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
-                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">Preview — ₹{sampleOrder} order</p>
+                  <p className="text-xs text-gray-400 uppercase tracking-wide mb-3">
+                    Preview — ₹{sampleOrder} order
+                  </p>
                   <div className="space-y-2 text-sm">
                     <div className="flex justify-between text-gray-500">
                       <span>Subtotal</span><span>₹{sampleOrder}</span>
                     </div>
-                    <div className="flex justify-between text-gray-500">
-                      <span>GST ({form.taxRate}%)</span><span>₹{tax.toFixed(0)}</span>
-                    </div>
-                    <div className="flex justify-between text-gray-500">
-                      <span>Packaging</span><span>₹{pkg}</span>
-                    </div>
-                    {svc > 0 && (
+                    {effectiveTaxRate > 0 && (
                       <div className="flex justify-between text-gray-500">
-                        <span>Service charge</span><span>₹{svc}</span>
+                        <span>GST ({effectiveTaxRate}%)</span>
+                        <span>₹{tax.toFixed(0)}</span>
                       </div>
+                    )}
+                    {effectivePkgFee > 0 && (
+                      <div className="flex justify-between text-gray-500">
+                        <span>Packaging</span><span>₹{effectivePkgFee}</span>
+                      </div>
+                    )}
+                    {svcFee > 0 && (
+                      <div className="flex justify-between text-gray-500">
+                        <span>Service charge</span><span>₹{svcFee}</span>
+                      </div>
+                    )}
+                    {effectiveTaxRate === 0 && effectivePkgFee === 0 && svcFee === 0 && (
+                      <div className="text-xs text-gray-400 italic">No additional fees</div>
                     )}
                     <div className="flex justify-between font-bold text-base border-t border-gray-200 pt-2">
                       <span>Total</span>
-                      <span className="text-[#E03455]">₹{(sampleOrder + tax + pkg + svc).toFixed(0)}</span>
+                      <span className="text-[#E03455]">₹{previewTotal.toFixed(0)}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Delivery */}
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
-                  <p className="text-sm text-blue-300">
-                    Customers will see <strong>~{form.deliveryEtaMin} minutes</strong> estimated delivery time after placing order.
+                  <p className="text-sm text-blue-400">
+                    Customers will see <strong>~{form.deliveryEtaMin} minutes</strong> estimated delivery time.
                   </p>
                 </div>
 
