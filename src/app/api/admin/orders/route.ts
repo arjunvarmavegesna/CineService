@@ -32,6 +32,14 @@ export async function GET(req: NextRequest) {
           items: { select: { name: true, quantity: true, totalPrice: true } },
           theater: { select: { name: true } },
           screen: { select: { name: true } },
+          payment: {
+            select: {
+              status: true,
+              providerPaymentId: true,
+              amount: true,
+              paidAt: true,
+            },
+          },
         },
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,

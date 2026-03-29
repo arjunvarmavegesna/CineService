@@ -26,6 +26,11 @@ enum OrderStatus {
   REFUNDED
 }
 
+enum PaymentMode {
+  ONLINE
+  COD
+}
+
 enum PaymentStatus {
   PENDING
   PAID
@@ -42,6 +47,12 @@ enum MenuItemStatus {
 enum CouponType {
   PERCENTAGE
   FIXED
+}
+
+enum SeatCategory {
+  STANDARD
+  GOLD
+  PREMIUM
 }
 
 model User {
@@ -106,14 +117,16 @@ model Screen {
 }
 
 model Seat {
-  id        String   @id @default(cuid())
+  id        String       @id @default(cuid())
   screenId  String
   row       String
   number    Int
   label     String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  screen    Screen   @relation(fields: [screenId], references: [id], onDelete: Cascade)
+  category  SeatCategory @default(STANDARD)
+  price     Float        @default(0)
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  screen    Screen       @relation(fields: [screenId], references: [id], onDelete: Cascade)
   orders    Order[]
   qrCode    QRCode?
 
@@ -196,6 +209,7 @@ model Order {
   discount      Float            @default(0)
   totalAmount   Float
   couponId      String?
+  paymentMode   PaymentMode      @default(ONLINE)
   customerName  String?
   customerPhone String?
   notes         String?
@@ -246,6 +260,7 @@ model Payment {
   providerPaymentId String?
   providerSignature String?
   failureReason     String?
+  paidAt            DateTime?
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   order             Order         @relation(fields: [orderId], references: [id])

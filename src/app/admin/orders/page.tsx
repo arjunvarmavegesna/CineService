@@ -4,12 +4,20 @@ import { useState, useEffect, useCallback } from "react";
 import { timeAgo, formatCurrency } from "@/lib/utils";
 
 interface OrderItem { name: string; quantity: number; totalPrice: number }
+interface Payment {
+  status: "PENDING" | "PAID" | "FAILED" | "REFUNDED";
+  providerPaymentId: string | null;
+  amount: number;
+  paidAt: string | null;
+}
+
 interface Order {
   id: string; orderNumber: string; seatLabel: string; status: string;
   totalAmount: number; createdAt: string; updatedAt: string;
   items: OrderItem[];
   theater: { name: string };
   screen: { name: string };
+  payment: Payment | null;
 }
 
 const COLUMNS = [
@@ -149,7 +157,17 @@ export default function LiveOrdersPage() {
                             </div>
 
                             <div className="flex items-center justify-between pt-1 border-t border-gray-200">
-                              <span className="text-sm font-bold">{formatCurrency(order.totalAmount)}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-sm font-bold">{formatCurrency(order.totalAmount)}</span>
+                                {order.payment && (
+                                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide
+                                    ${order.payment.status === "PAID" ? "bg-green-500/15 text-green-500" :
+                                      order.payment.status === "FAILED" ? "bg-red-500/15 text-red-400" :
+                                      "bg-gray-500/15 text-gray-400"}`}>
+                                    {order.payment.status}
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex gap-1">
                                 {NEXT_STATUS[order.status] && (
                                   <button

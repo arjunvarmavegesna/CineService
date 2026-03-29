@@ -16,10 +16,30 @@ interface Screen {
 
 interface Seat {
   id: string; row: string; number: number; label: string; isActive: boolean;
+  category: string; price: number;
   qrCode?: { code: string; isActive: boolean };
 }
 
+interface CategoryGroup {
+  rows: string;
+  seatsPerRow: string;
+  category: "STANDARD" | "GOLD" | "PREMIUM";
+  price: string;
+}
+
 type Tab = "theaters" | "screens" | "seats";
+
+const CATEGORY_COLORS: Record<string, string> = {
+  PREMIUM: "bg-purple-100 text-purple-700 border-purple-300",
+  GOLD: "bg-amber-100 text-amber-700 border-amber-300",
+  STANDARD: "bg-gray-100 text-gray-600 border-gray-300",
+};
+
+const DEFAULT_GROUPS: CategoryGroup[] = [
+  { rows: "Q,R", seatsPerRow: "10", category: "PREMIUM", price: "299" },
+  { rows: "G,H,I,J,K,L,M,N,O,P", seatsPerRow: "14", category: "GOLD", price: "149" },
+  { rows: "A,B,C,D,E,F", seatsPerRow: "14", category: "STANDARD", price: "99" },
+];
 
 export default function TheatersPage() {
   const [tab, setTab] = useState<Tab>("theaters");
@@ -34,7 +54,7 @@ export default function TheatersPage() {
 
   const [theaterForm, setTheaterForm] = useState({ name: "", address: "", city: "", state: "", phone: "" });
   const [screenForm, setScreenForm] = useState({ name: "", number: "", capacity: "" });
-  const [seatForm, setSeatForm] = useState({ rows: "A,B,C,D,E,F,G,H", seatsPerRow: "12" });
+  const [categoryGroups, setCategoryGroups] = useState<CategoryGroup[]>(DEFAULT_GROUPS);
 
   const loadTheaters = useCallback(async () => {
     setLoading(true);
@@ -101,13 +121,20 @@ export default function TheatersPage() {
   const generateBulkSeats = async () => {
     if (!selectedScreen) return;
     setSaving(true);
-    const rows = seatForm.rows.split(",").map((r) => r.trim().toUpperCase()).filter((r) => r.length === 1);
+    const groups = categoryGroups
+      .map((g) => ({
+        rows: g.rows.split(",").map((r) => r.trim().toUpperCase()).filter((r) => r.length === 1),
+        seatsPerRow: parseInt(g.seatsPerRow) || 10,
+        category: g.category,
+        price: parseFloat(g.price) || 0,
+      }))
+      .filter((g) => g.rows.length > 0);
     const res = await fetch("/api/admin/seats", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ screenId: selectedScreen.id, rows, seatsPerRow: parseInt(seatForm.seatsPerRow) }),
+      body: JSON.stringify({ screenId: selectedScreen.id, groups }),
     });
-    if (res.ok) { setModal(null); loadSeats(selectedScreen.id); }
+    if (res.ok) { setModal(null); loadSeats(selectedScreen.id); setCategoryGroups(DEFAULT_GROUPS); }
     setSaving(false);
   };
 
@@ -364,40 +391,89 @@ export default function TheatersPage() {
         <>
           <div className="fixed inset-0 bg-gray-900/50 z-40" onClick={() => setModal(null)} />
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-sm">
-              <div className="flex items-center justify-between mb-5">
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between mb-2">
                 <h2 className="font-bold text-lg">Generate Seats</h2>
                 <button onClick={() => setModal(null)} className="text-gray-400 hover:text-gray-900 text-xl">✕</button>
               </div>
-              <p className="text-sm text-gray-500 mb-4">This will create seats and QR codes for <strong className="text-gray-900">{selectedScreen?.name}</strong>.</p>
-              <div className="space-y-3">
-                <div>
-                  <label className="text-xs text-gray-500 block mb-1">Rows (comma separated)</label>
-                  <input
-                    value={seatForm.rows}
-                    onChange={(e) => setSeatForm({ ...seatForm, rows: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
-                    placeholder="A,B,C,D,E,F,G,H"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-gray-500 block mb-1">Seats per Row</label>
-                  <input
-                    type="number"
-                    value={seatForm.seatsPerRow}
-                    onChange={(e) => setSeatForm({ ...seatForm, seatsPerRow: e.target.value })}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#E03455]/50"
-                  />
-                </div>
-                <div className="bg-[#E03455]/10 border border-[#E03455]/20 rounded-xl p-3 text-xs text-[#C82040]">
-                  Will create {seatForm.rows.split(",").filter((r) => r.trim().length === 1).length} rows × {seatForm.seatsPerRow} seats = {seatForm.rows.split(",").filter((r) => r.trim().length === 1).length * parseInt(seatForm.seatsPerRow || "0")} seats with QR codes
-                </div>
+              <p className="text-sm text-gray-500 mb-5">Create seat categories for <strong className="text-gray-900">{selectedScreen?.name}</strong>.</p>
+
+              <div className="space-y-4">
+                {categoryGroups.map((group, idx) => (
+                  <div key={idx} className="border border-gray-200 rounded-xl p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className={`text-xs font-bold px-2 py-0.5 rounded-full border ${CATEGORY_COLORS[group.category]}`}>
+                        {group.category}
+                      </span>
+                      {categoryGroups.length > 1 && (
+                        <button
+                          onClick={() => setCategoryGroups((prev) => prev.filter((_, i) => i !== idx))}
+                          className="text-gray-300 hover:text-red-400 text-sm"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="col-span-2">
+                        <label className="text-xs text-gray-500 block mb-1">Rows (comma separated)</label>
+                        <input
+                          value={group.rows}
+                          onChange={(e) => setCategoryGroups((prev) => prev.map((g, i) => i === idx ? { ...g, rows: e.target.value } : g))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#E03455]/50"
+                          placeholder="A,B,C"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500 block mb-1">Seats per Row</label>
+                        <input
+                          type="number"
+                          value={group.seatsPerRow}
+                          onChange={(e) => setCategoryGroups((prev) => prev.map((g, i) => i === idx ? { ...g, seatsPerRow: e.target.value } : g))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#E03455]/50"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500 block mb-1">Price (₹)</label>
+                        <input
+                          type="number"
+                          value={group.price}
+                          onChange={(e) => setCategoryGroups((prev) => prev.map((g, i) => i === idx ? { ...g, price: e.target.value } : g))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#E03455]/50"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <label className="text-xs text-gray-500 block mb-1">Category Type</label>
+                        <select
+                          value={group.category}
+                          onChange={(e) => setCategoryGroups((prev) => prev.map((g, i) => i === idx ? { ...g, category: e.target.value as CategoryGroup["category"] } : g))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-[#E03455]/50"
+                        >
+                          <option value="STANDARD">Standard</option>
+                          <option value="GOLD">Gold</option>
+                          <option value="PREMIUM">Premium</option>
+                        </select>
+                      </div>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-2">
+                      {group.rows.split(",").filter((r) => r.trim().length === 1).length} rows × {group.seatsPerRow} = {group.rows.split(",").filter((r) => r.trim().length === 1).length * (parseInt(group.seatsPerRow) || 0)} seats
+                    </p>
+                  </div>
+                ))}
+
+                <button
+                  onClick={() => setCategoryGroups((prev) => [...prev, { rows: "", seatsPerRow: "10", category: "STANDARD", price: "99" }])}
+                  className="w-full border border-dashed border-gray-300 hover:border-[#E03455]/50 text-gray-400 hover:text-[#E03455] rounded-xl py-2.5 text-sm transition-colors"
+                >
+                  + Add Category Group
+                </button>
               </div>
+
               <div className="flex gap-3 mt-5">
                 <button onClick={() => setModal(null)} className="flex-1 border border-gray-200 text-gray-500 py-2.5 rounded-xl text-sm">Cancel</button>
                 <button onClick={generateBulkSeats} disabled={saving}
                   className="flex-1 bg-[#E03455] hover:bg-[#C82040] disabled:opacity-50 text-white font-semibold py-2.5 rounded-xl text-sm">
-                  {saving ? "Generating..." : "Generate"}
+                  {saving ? "Generating..." : "Generate Seats"}
                 </button>
               </div>
             </div>

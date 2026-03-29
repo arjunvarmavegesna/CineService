@@ -4,10 +4,16 @@ import { prisma } from "@/lib/prisma";
 import { requireAdminRole } from "@/lib/auth";
 import { z } from "zod";
 
-const BulkSeatSchema = z.object({
-  screenId: z.string(),
+const CategoryGroupSchema = z.object({
   rows: z.array(z.string().length(1)),
   seatsPerRow: z.number().int().min(1).max(50),
+  category: z.enum(["STANDARD", "GOLD", "PREMIUM"]).default("STANDARD"),
+  price: z.number().min(0).default(0),
+});
+
+const BulkSeatSchema = z.object({
+  screenId: z.string(),
+  groups: z.array(CategoryGroupSchema).min(1),
 });
 
 export async function GET(req: NextRequest) {
@@ -41,31 +47,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
     }
 
-    const { screenId, rows, seatsPerRow } = parsed.data;
+    const { screenId, groups } = parsed.data;
 
     // 1. Verify screen exists
     const screen = await prisma.screen.findUnique({ where: { id: screenId } });
     if (!screen) return NextResponse.json({ error: "Screen not found" }, { status: 404 });
 
-    // 2. Build all seat records upfront
-    const seatData = rows.flatMap((row) =>
-      Array.from({ length: seatsPerRow }, (_, i) => ({
-        screenId,
-        row,
-        number: i + 1,
-        label: `${row}${i + 1}`,
-      }))
+    // 2. Build all seat records
+    const seatData = groups.flatMap(({ rows, seatsPerRow, category, price }) =>
+      rows.flatMap((row) =>
+        Array.from({ length: seatsPerRow }, (_, i) => ({
+          screenId,
+          row,
+          number: i + 1,
+          label: `${row}${i + 1}`,
+          category,
+          price,
+        }))
+      )
     );
 
-    // 3. Bulk-insert seats in ONE query (skip existing — handles re-runs safely)
+    // 3. Bulk-insert seats (skip existing)
     await prisma.seat.createMany({
       data: seatData,
       skipDuplicates: true,
     });
 
-    // 4. Fetch all seats for the specified rows (newly created + pre-existing)
+    // 4. Fetch all seats for the specified rows
+    const allRows = groups.flatMap((g) => g.rows);
     const allSeats = await prisma.seat.findMany({
-      where: { screenId, row: { in: rows } },
+      where: { screenId, row: { in: allRows } },
       select: { id: true, label: true },
     });
 
@@ -76,7 +87,7 @@ export async function POST(req: NextRequest) {
     });
     const coveredSeatIds = new Set(existingQRs.map((q) => q.seatId));
 
-    // 6. Bulk-insert missing QR codes in ONE query
+    // 6. Bulk-insert missing QR codes
     const newQRData = allSeats
       .filter((s) => !coveredSeatIds.has(s.id))
       .map((s) => ({
