@@ -150,18 +150,18 @@ export default function LiveOrdersPage() {
       {loading ? (
         <div className="text-gray-400 text-center py-16">Loading orders...</div>
       ) : (
-        <div className="relative">
+        <div className="relative px-10">
           {/* Left arrow */}
           <button
             onClick={() => scrollRef.current?.scrollBy({ left: -288, behavior: "smooth" })}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 z-10 w-8 h-8 bg-white border border-gray-200 rounded-full shadow flex items-center justify-center text-gray-500 hover:text-gray-900 hover:shadow-md transition-all"
+            className="absolute left-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-gray-200 rounded-full shadow flex items-center justify-center text-gray-500 hover:text-gray-900 hover:shadow-md transition-all"
           >
             ‹
           </button>
           {/* Right arrow */}
           <button
             onClick={() => scrollRef.current?.scrollBy({ left: 288, behavior: "smooth" })}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 z-10 w-8 h-8 bg-white border border-gray-200 rounded-full shadow flex items-center justify-center text-gray-500 hover:text-gray-900 hover:shadow-md transition-all"
+            className="absolute right-1 top-1/2 -translate-y-1/2 z-10 w-8 h-8 bg-white border border-gray-200 rounded-full shadow flex items-center justify-center text-gray-500 hover:text-gray-900 hover:shadow-md transition-all"
           >
             ›
           </button>
