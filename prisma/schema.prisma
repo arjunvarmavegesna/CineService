@@ -53,6 +53,7 @@ enum SeatCategory {
   STANDARD
   GOLD
   PREMIUM
+  RECLINER
 }
 
 model User {

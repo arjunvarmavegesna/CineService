@@ -67,7 +67,18 @@ export async function DELETE(
 
   try {
     const { id } = await params;
-    await prisma.theater.update({ where: { id }, data: { isActive: false } });
+
+    // Block deletion if orders exist — order history must be preserved
+    const orderCount = await prisma.order.count({ where: { theaterId: id } });
+    if (orderCount > 0) {
+      return NextResponse.json(
+        { error: `Cannot delete: this theater has ${orderCount} order(s) linked to it. Deactivate it instead.` },
+        { status: 409 }
+      );
+    }
+
+    // Hard delete — cascades to screens → seats → QR codes via schema
+    await prisma.theater.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[DELETE /api/admin/theaters/[id]]", err);

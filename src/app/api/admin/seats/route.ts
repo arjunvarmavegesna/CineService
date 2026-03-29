@@ -7,7 +7,7 @@ import { z } from "zod";
 const CategoryGroupSchema = z.object({
   rows: z.array(z.string().length(1)),
   seatsPerRow: z.number().int().min(1).max(50),
-  category: z.enum(["STANDARD", "GOLD", "PREMIUM"]).default("STANDARD"),
+  category: z.enum(["STANDARD", "GOLD", "PREMIUM", "RECLINER"]).default("STANDARD"),
   price: z.number().min(0).default(0),
 });
 

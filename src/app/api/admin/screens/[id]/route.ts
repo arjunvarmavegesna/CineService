@@ -41,7 +41,18 @@ export async function DELETE(
 
   try {
     const { id } = await params;
-    await prisma.screen.update({ where: { id }, data: { isActive: false } });
+
+    // Block deletion if orders exist
+    const orderCount = await prisma.order.count({ where: { screenId: id } });
+    if (orderCount > 0) {
+      return NextResponse.json(
+        { error: `Cannot delete: this screen has ${orderCount} order(s) linked to it. Deactivate it instead.` },
+        { status: 409 }
+      );
+    }
+
+    // Hard delete — cascades to seats → QR codes via schema
+    await prisma.screen.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (err) {
     console.error("[DELETE /api/admin/screens/[id]]", err);
