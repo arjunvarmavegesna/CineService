@@ -191,6 +191,15 @@ export default function TheatersPage() {
     setDeleting(false);
   };
 
+  const toggleTheaterActive = async (id: string, isActive: boolean) => {
+    const res = await fetch(`/api/admin/theaters/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive }),
+    });
+    if (res.ok) loadTheaters();
+  };
+
   const deactivateTheater = async (id: string) => {
     setDeleting(true);
     setDeleteError("");
@@ -224,6 +233,15 @@ export default function TheatersPage() {
       setDeleteError(data.error ?? "Failed to delete screen");
     }
     setDeleting(false);
+  };
+
+  const toggleScreenActive = async (id: string, isActive: boolean) => {
+    const res = await fetch(`/api/admin/screens/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isActive }),
+    });
+    if (res.ok && selectedTheater) loadScreens(selectedTheater.id);
   };
 
   const deactivateScreen = async (id: string) => {
@@ -402,12 +420,20 @@ export default function TheatersPage() {
                           </div>
                         </div>
                       ) : (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(t.id); setDeleteError(""); }}
-                          className="text-xs text-gray-300 hover:text-red-400 border border-transparent hover:border-red-200 px-2.5 py-1 rounded-lg transition-all"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); toggleTheaterActive(t.id, !t.isActive); }}
+                            className={`text-xs border px-2.5 py-1 rounded-lg transition-all ${t.isActive ? "text-gray-400 border-transparent hover:border-amber-200 hover:text-amber-500" : "text-green-500 border-green-200 hover:bg-green-50"}`}
+                          >
+                            {t.isActive ? "Deactivate" : "Activate"}
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(t.id); setDeleteError(""); }}
+                            className="text-xs text-gray-300 hover:text-red-400 border border-transparent hover:border-red-200 px-2.5 py-1 rounded-lg transition-all"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -480,12 +506,20 @@ export default function TheatersPage() {
                           </div>
                         </div>
                       ) : (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(s.id); setDeleteError(""); }}
-                          className="text-xs text-gray-300 hover:text-red-400 border border-transparent hover:border-red-200 px-2.5 py-1 rounded-lg transition-all"
-                        >
-                          Delete
-                        </button>
+                        <div className="flex gap-1.5">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); toggleScreenActive(s.id, !s.isActive); }}
+                            className={`text-xs border px-2.5 py-1 rounded-lg transition-all ${s.isActive ? "text-gray-400 border-transparent hover:border-amber-200 hover:text-amber-500" : "text-green-500 border-green-200 hover:bg-green-50"}`}
+                          >
+                            {s.isActive ? "Deactivate" : "Activate"}
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(s.id); setDeleteError(""); }}
+                            className="text-xs text-gray-300 hover:text-red-400 border border-transparent hover:border-red-200 px-2.5 py-1 rounded-lg transition-all"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
